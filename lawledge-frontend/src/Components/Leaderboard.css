@@ -1,0 +1,94 @@
+/* ═══════════════════════════════════════
+   LEADERBOARD COMPONENT
+═══════════════════════════════════════ */
+
+.leaderboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.5rem 0 3rem;
+}
+
+.leaderboard-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--peach-deep), var(--rose-deep));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.4rem;
+}
+.leaderboard-sub { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.25rem; }
+
+/* ── Leaderboard Card ── */
+.leaderboard .card {
+  padding: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* ── Podium (top 3) ── */
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.5rem;
+  padding: 2.5rem 2rem 0;
+  background: linear-gradient(180deg, rgba(255,182,198,0.15) 0%, transparent 100%);
+}
+
+.podium-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.podium-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+.podium-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  max-width: 100px;
+  line-height: 1.2;
+}
+.podium-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.podium-bar {
+  width: 80px;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+.podium-item:nth-child(1) .podium-bar { height: 80px; background: linear-gradient(180deg, #FFD700, #FFA500); color: white; }
+.podium-item:nth-child(2) .podium-bar { height: 110px; background: linear-gradient(180deg, var(--rose-deep), #c04070); color: white; }
+.podium-item:nth-child(3) .podium-bar { height: 60px; background: linear-gradient(180deg, #CD7F32, #a0612a); color: white; }
+
+/* ── Table section ── */
+.leaderboard-table-wrap {
+  padding: 1.5rem;
+}
+
+/* Row rank badges */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem; height: 2rem;
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+.rank-badge.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
+.rank-badge.rank-2 { background: linear-gradient(135deg, var(--rose-deep), #c04070); color: white; }
+.rank-badge.rank-3 { background: linear-gradient(135deg, #CD7F32, #a0612a); color: white; }
+.rank-badge.rank-n { background: var(--lavender); color: var(--lavender-deep); }

@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════
+   HOME PAGE
+═══════════════════════════════════════ */
+
+.home { padding: 1rem 0 4rem; }
+
+/* ── Hero ── */
+.home-hero {
+  position: relative;
+  padding: 6rem 4rem;
+  border-radius: 2.5rem;
+  margin-bottom: 4rem;
+  overflow: hidden;
+  background: #ffffff;
+  border: 3px solid #5e35b1;
+  box-shadow: 0 8px 24px rgba(94,53,177,0.2);
+  backdrop-filter: none;
+}
+
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,181,253,0.45), transparent 70%);
+  pointer-events: none;
+}
+
+.home-hero h1 {
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #5e35b1 0%, #e91e63 50%, #009688 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-hero .intro {
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+  color: var(--text-secondary);
+  max-width: 48rem;
+  line-height: 1.75;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+/* ── Section Label ── */
+.section-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--lavender-deep);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 2.5rem; height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--lavender-deep), var(--rose-deep));
+}
+
+/* ── Feature Cards Grid ── */
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin-top: 1rem;
+  margin-bottom: 3.5rem;
+}
+
+/* Each card gets a unique rainbow hue */
+.cards .card {
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem 2.75rem;
+  border-radius: 2rem;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
+}
+.cards .card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  opacity: 0.18;
+  pointer-events: none;
+  transition: transform .4s var(--ease), opacity .4s;
+}
+.cards .card:hover::after { transform: scale(1.6); opacity: 0.28; }
+
+.cards .card:nth-child(1) { background: linear-gradient(145deg, #fff5f8, var(--rose));   border-color: var(--rose-mid); }
+.cards .card:nth-child(1)::after { background: var(--rose-deep); }
+.cards .card:nth-child(2) { background: linear-gradient(145deg, #fff8f0, var(--peach));  border-color: var(--peach-mid); }
+.cards .card:nth-child(2)::after { background: var(--peach-deep); }
+.cards .card:nth-child(3) { background: linear-gradient(145deg, #f4fff8, var(--mint));   border-color: var(--mint-mid); }
+.cards .card:nth-child(3)::after { background: var(--mint-deep); }
+.cards .card:nth-child(4) { background: linear-gradient(145deg, #f5f0ff, var(--lavender)); border-color: var(--lavender-mid); }
+.cards .card:nth-child(4)::after { background: var(--lavender-deep); }
+.cards .card:nth-child(5) { background: linear-gradient(145deg, #f0f7ff, var(--sky));     border-color: var(--sky-mid); }
+.cards .card:nth-child(5)::after { background: var(--sky-deep); }
+
+.cards .card h3 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  margin-bottom: 0.8rem;
+  line-height: 1.15;
+}
+.cards .card:nth-child(1) h3 { color: var(--rose-deep); }
+.cards .card:nth-child(2) h3 { color: var(--peach-deep); }
+.cards .card:nth-child(3) h3 { color: var(--mint-deep); }
+.cards .card:nth-child(4) h3 { color: var(--lavender-deep); }
+.cards .card:nth-child(5) h3 { color: var(--sky-deep); }
+
+.cards .card p {
+  font-size: 1.5rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.cards .card a { display: inline-flex; }
+
+/* Card-specific button colours */
+.cards .card:nth-child(1) .btn { background: linear-gradient(135deg, var(--rose-deep), #c04070); }
+.cards .card:nth-child(2) .btn { background: linear-gradient(135deg, var(--peach-deep), #c86030); }
+.cards .card:nth-child(3) .btn { background: linear-gradient(135deg, var(--mint-deep), #168050); }
+.cards .card:nth-child(4) .btn { background: linear-gradient(135deg, var(--lavender-deep), #5b21b6); }
+.cards .card:nth-child(5) .btn { background: linear-gradient(135deg, var(--sky-deep), #1060a8); }
+
+/* ── Accordion section ── */
+.home .card { margin-top: 0; }
+
+/* ── Banner section ── */
+.home-banner-wrap { margin-top: 2.5rem; padding-bottom: 2rem; }
+.banner {
+  width: 100%; height: auto;
+  border-radius: var(--radius-xl);
+  object-fit: cover;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .cards { grid-template-columns: 1fr; gap: 1.25rem; }
+  .home-hero { padding: 2.5rem 1.75rem; }
+}

@@ -1,0 +1,160 @@
+/* ═══════════════════════════════════════
+   TRACK COMPLAINT PAGE
+═══════════════════════════════════════ */
+
+.track-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.track-page-title {
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #009688, #0288d1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.6rem;
+}
+.track-page-sub { color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1.3rem; font-weight: 500; }
+
+/* ── Search Card ── */
+.track-card {
+  background: #ffffff;
+  border: 2.5px solid #0288d1;
+  border-radius: 2rem;
+  padding: 3rem 3.25rem;
+  box-shadow: 0 6px 16px rgba(2,136,209,0.15);
+  margin-bottom: 3rem;
+  backdrop-filter: none;
+}
+.track-card h2 { font-size: 1.6rem; margin-bottom: 1.75rem; color: #0288d1; font-weight: 900; }
+
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0;
+  flex-wrap: wrap;
+}
+.search-bar input { flex: 1; min-width: 240px; }
+.search-bar .btn {
+  background: linear-gradient(135deg, var(--mint-deep), var(--sky-deep));
+  color: white;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 6px 22px rgba(31,168,106,0.3);
+  padding: 1rem 1.85rem;
+  font-size: 1.05rem;
+}
+.search-bar .btn:hover {
+  background: linear-gradient(135deg, #158050, #1060a8);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(31,168,106,0.4);
+}
+
+/* ── Result Card ── */
+.result-card {
+  background: rgba(255,255,255,0.92);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.result-header {
+  padding: 1.75rem 2.25rem;
+  background: linear-gradient(135deg, rgba(168,237,207,0.18), rgba(147,208,247,0.15));
+  border-bottom: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.result-header h3 { font-size: 1.35rem; color: var(--text-primary); margin: 0; }
+.tracking-code-badge {
+  font-family: 'Nunito', monospace;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--lavender-deep);
+  background: var(--lavender);
+  border: 1px solid var(--lavender-mid);
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+}
+
+/* ── Progress section ── */
+.progress-section {
+  padding: 2rem 2.25rem;
+  border-bottom: 1.5px solid var(--border);
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+.progress-label span { font-size: 0.9rem; font-weight: 700; color: var(--text-secondary); }
+.progress-label strong { font-size: 0.9rem; font-weight: 900; color: var(--mint-deep); }
+
+/* Stage pills */
+.stages-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+.stage-pill {
+  font-size: 0.92rem;
+  font-weight: 800;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.8);
+  transition: all .2s;
+}
+.stage-pill.done   { background: var(--mint); color: var(--mint-deep); border-color: var(--mint-mid); }
+.stage-pill.active { background: var(--lavender-deep); color: white; border-color: var(--lavender-deep); box-shadow: 0 3px 12px rgba(124,58,237,0.28); }
+
+/* ── Details grid ── */
+.complaint-details {
+  padding: 1.75rem 2.25rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+.detail-item label {
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.detail-item p {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* ── Action row ── */
+.track-actions {
+  padding: 1.5rem 2.25rem;
+  border-top: 1.5px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .search-bar { flex-direction: column; }
+  .track-card { padding: 1.75rem 1.5rem; }
+  .result-header { flex-direction: column; align-items: flex-start; }
+}

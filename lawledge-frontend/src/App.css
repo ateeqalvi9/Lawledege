@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════
+   APP LAYOUT — Sidebar + Main Content
+═══════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body, html { width:100%; min-height:100%; }
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+}
+
+/* ── Sidebar Navbar ── */
+.navbar {
+  width: 100%;
+  height: auto;
+  background: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 2.5px solid #5e35b1;
+  border-radius: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1rem 2rem;
+  flex-shrink: 0;
+  position: static;
+  box-shadow: 0 8px 24px rgba(94,53,177,0.2);
+  overflow: auto;
+}
+
+/* Decorative rainbow strip at top */
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg,
+    #ffb3c6 0%, #ffcc99 16%, #fff176 32%,
+    #a8edcf 48%, #93d0f7 64%, #c4b5fd 80%, #e9a8f7 100%);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+.nav-logo {
+  margin-bottom: 2.25rem;
+  padding-top: 0.5rem;
+}
+
+.nav-logo h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  background: linear-gradient(135deg, #5e35b1, #e91e63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.nav-logo span {
+  display: block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  -webkit-text-fill-color: var(--text-muted);
+}
+
+.navbar a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.8rem 1.2rem;
+  margin: 0 0.5rem;
+  border-radius: 1.5rem;
+  transition: all .25s var(--ease);
+  border: 2px solid transparent;
+}
+
+.navbar a:hover,
+.navbar a.active {
+  background: var(--lavender);
+  color: var(--lavender-deep);
+  border-color: var(--lavender-mid);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+/* Rainbow link hover colours */
+.navbar a:nth-child(2):hover { background:var(--rose);     color:var(--rose-deep);     border-color:var(--rose-mid); }
+.navbar a:nth-child(3):hover { background:var(--peach);    color:var(--peach-deep);    border-color:var(--peach-mid); }
+.navbar a:nth-child(4):hover { background:var(--mint);     color:var(--mint-deep);     border-color:var(--mint-mid); }
+.navbar a:nth-child(5):hover { background:var(--sky);      color:var(--sky-deep);      border-color:var(--sky-mid); }
+.navbar a:nth-child(6):hover { background:var(--lavender); color:var(--lavender-deep); border-color:var(--lavender-mid); }
+.navbar a:nth-child(7):hover { background:var(--lilac);    color:var(--lilac-deep);    border-color:var(--lilac-mid); }
+
+/* Nav icons as coloured circles */
+.navbar a::before {
+  content: attr(data-icon);
+  width: 2.8rem; height: 2.8rem;
+  border-radius: 50%;
+  background: #d1c4ff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; flex-shrink: 0;
+  font-weight: bold;
+}
+
+/* ── Main wrapper ── */
+.main-wrapper {
+  flex: 1;
+  overflow-x: hidden;
+}
+
+.content {
+  padding: 2.5rem 2rem;
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .navbar { width: 230px; }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    padding: 1rem;
+  }
+  .navbar a { margin: 0.2rem; font-size: 1.2rem; }
+  .content { padding: 1.25rem 1rem; }
+}
