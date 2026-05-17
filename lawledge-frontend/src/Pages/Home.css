@@ -72,62 +72,37 @@
 /* ── Feature Cards Grid ── */
 .cards {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  margin-top: 1.25rem;
   margin-bottom: 3.5rem;
 }
 
-/* Each card gets a unique rainbow hue */
+/* Home cards (monochrome + light purple only) */
 .cards .card {
-  min-height: 340px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 3rem 2.75rem;
+  padding: 2.25rem 2rem;
   border-radius: 2rem;
   position: relative;
   overflow: hidden;
-  border: 2px solid #e0e0e0;
+  border: 2px solid rgba(93,53,177,0.18);
+  background: linear-gradient(145deg, #ffffff, rgba(168,85,247,0.06));
 }
-.cards .card::after {
-  content: '';
-  position: absolute;
-  bottom: -30px; right: -30px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  opacity: 0.18;
-  pointer-events: none;
-  transition: transform .4s var(--ease), opacity .4s;
-}
-.cards .card:hover::after { transform: scale(1.6); opacity: 0.28; }
-
-.cards .card:nth-child(1) { background: linear-gradient(145deg, #fff5f8, var(--rose));   border-color: var(--rose-mid); }
-.cards .card:nth-child(1)::after { background: var(--rose-deep); }
-.cards .card:nth-child(2) { background: linear-gradient(145deg, #fff8f0, var(--peach));  border-color: var(--peach-mid); }
-.cards .card:nth-child(2)::after { background: var(--peach-deep); }
-.cards .card:nth-child(3) { background: linear-gradient(145deg, #f4fff8, var(--mint));   border-color: var(--mint-mid); }
-.cards .card:nth-child(3)::after { background: var(--mint-deep); }
-.cards .card:nth-child(4) { background: linear-gradient(145deg, #f5f0ff, var(--lavender)); border-color: var(--lavender-mid); }
-.cards .card:nth-child(4)::after { background: var(--lavender-deep); }
-.cards .card:nth-child(5) { background: linear-gradient(145deg, #f0f7ff, var(--sky));     border-color: var(--sky-mid); }
-.cards .card:nth-child(5)::after { background: var(--sky-deep); }
 
 .cards .card h3 {
-  font-size: 2.5rem;
+  font-size: 1.9rem;
   font-weight: 900;
   margin-bottom: 0.8rem;
-  line-height: 1.15;
+  line-height: 1.2;
+  color: #5b21b6;
 }
-.cards .card:nth-child(1) h3 { color: var(--rose-deep); }
-.cards .card:nth-child(2) h3 { color: var(--peach-deep); }
-.cards .card:nth-child(3) h3 { color: var(--mint-deep); }
-.cards .card:nth-child(4) h3 { color: var(--lavender-deep); }
-.cards .card:nth-child(5) h3 { color: var(--sky-deep); }
 
 .cards .card p {
-  font-size: 1.5rem;
-  line-height: 1.8;
+  font-size: 1.15rem;
+  line-height: 1.85;
   color: var(--text-secondary);
   margin-bottom: 2rem;
   font-weight: 500;
@@ -135,12 +110,6 @@
 
 .cards .card a { display: inline-flex; }
 
-/* Card-specific button colours */
-.cards .card:nth-child(1) .btn { background: linear-gradient(135deg, var(--rose-deep), #c04070); }
-.cards .card:nth-child(2) .btn { background: linear-gradient(135deg, var(--peach-deep), #c86030); }
-.cards .card:nth-child(3) .btn { background: linear-gradient(135deg, var(--mint-deep), #168050); }
-.cards .card:nth-child(4) .btn { background: linear-gradient(135deg, var(--lavender-deep), #5b21b6); }
-.cards .card:nth-child(5) .btn { background: linear-gradient(135deg, var(--sky-deep), #1060a8); }
 
 /* ── Accordion section ── */
 .home .card { margin-top: 0; }
@@ -159,3 +128,4 @@
   .cards { grid-template-columns: 1fr; gap: 1.25rem; }
   .home-hero { padding: 2.5rem 1.75rem; }
 }
+

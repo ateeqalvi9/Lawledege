@@ -2,7 +2,13 @@ import React from "react";
 import "./Button.css";
 
 export default function Button({ children, onClick, type = "button", className = "", variant = "primary", disabled = false, ...props }) {
-  const variantClass = variant === "outline" ? "btn-outline" : variant === "secondary" ? "btn-secondary" : "btn-primary";
+  const variantClass =
+    variant === "outline"   ? "btn-outline" :
+    variant === "secondary"? "btn-secondary" :
+    variant === "reject"   ? "btn-reject" :
+    variant === "approve"  ? "btn-approve" :
+    "btn-primary";
+
   return (
     <button
       type={type}

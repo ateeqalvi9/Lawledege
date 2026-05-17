@@ -10,14 +10,15 @@
 
 .leaderboard-title {
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--peach-deep), var(--rose-deep));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 700;
+  color: #5b21b6;
+  background: none;
+  -webkit-text-fill-color: unset;
   margin-bottom: 0.4rem;
 }
-.leaderboard-sub { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.25rem; }
+
+.leaderboard-sub { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.25rem; font-weight: 600; }
+
 
 /* ── Leaderboard Card ── */
 .leaderboard .card {

@@ -1,11 +1,13 @@
+
 import React from "react";
-import { supabase } from "../api/supabaseClient";
 import Button from "./ui/Button.jsx";
 
 // Standard Supabase URL Construction (replace with your actual project URL)
 const PROJECT_URL = "https://ytyydnetlsrldnnkvfxa.supabase.co"; 
 
+
 export default function ReviewModal({ complaint, onClose, onApprove, onPurge, onMarkResolved }) {
+
   if (!complaint) return null;
 
   // Construct the correct public URL for the image
@@ -52,8 +54,8 @@ export default function ReviewModal({ complaint, onClose, onApprove, onPurge, on
             Approve & Forward
           </Button>
           {/* Button to permanently delete row + file */}
-          <Button 
-            variant="danger" 
+          <Button
+            variant="reject"
             onClick={() => onPurge(complaint.id, complaint.evidence_url)}
           >
             Reject & Delete Permanently

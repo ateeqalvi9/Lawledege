@@ -9,7 +9,8 @@ export default function Home() {
     <div className="home">
       {/* Hero */}
       <div className="home-hero">
-        <h1>Welcome to Lawledge Portal</h1>
+        <h1>Lawledge</h1>
+
         <p className="intro">
           File complaints, track progress, and connect with authorities — all in one transparent, accessible place.
         </p>

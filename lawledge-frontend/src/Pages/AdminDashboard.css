@@ -76,9 +76,9 @@
   letter-spacing: 0.08em;
   margin: 0;
 }
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-}
+
+  /* letter-spacing: 0.08em;
+  color: var(--text-muted); */
 
 .stat-card.urgent h3 { color: var(--rose-deep); }
 
