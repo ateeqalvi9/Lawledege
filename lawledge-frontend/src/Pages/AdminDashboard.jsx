@@ -39,10 +39,20 @@ export default function AdminDashboard() {
   const [helpReqs, setHelpReqs] = useState([]);
   const [loading, setLoading]   = useState(false);
 
-  // Secure Route Protection Gate
+  // FIXED: Security access validation gate rewritten with explicit history state replacements
   useEffect(() => {
-    if (!user) { navigate('/login'); return; }
-    if (user.email !== ADMIN_EMAIL) { navigate('/feed'); }
+    // If authorization state is still loading or undetermined, wait!
+    if (user === undefined) return;
+
+    if (!user) { 
+      // replace: true overwrites the history index so clicking 'back' doesn't cause loop traps
+      navigate('/login', { replace: true }); 
+      return; 
+    }
+    
+    if (user.email !== ADMIN_EMAIL) { 
+      navigate('/feed', { replace: true }); 
+    }
   }, [user, navigate]);
 
   // Unified Centralized Data Acquisition Engine
@@ -79,8 +89,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // FIXED: Pure memory computation filters items dynamically during render layout loops.
-  // This completely eliminates the old useEffect block and removes the setFiltered cascading error.
+  // Pure memory computation filters items dynamically during render layout loops.
   const filteredComplaints = complaints.filter(c => {
     const matchesStatus = activeFilter === "all" || c.status === activeFilter;
     
@@ -160,6 +169,14 @@ export default function AdminDashboard() {
   if (!gate) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        {/* FIXED: Added a dedicated, clean UI Exit button so users have an alternative escape route out of the gate */}
+        <button 
+          onClick={() => navigate('/', { replace: true })}
+          style={{ position: 'absolute', top: 24, left: 24, background: '#fff', border: '1.5px solid var(--border)', padding: '10px 16px', borderRadius: 12, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+        >
+          ← Exit to Portal
+        </button>
+
         <div style={{ width: '100%', maxWidth: 400, background: '#fff', borderRadius: 24, padding: 32, border: '1.5px solid var(--border)', boxShadow: 'var(--shadow-lg)', textAlign: 'center' }}>
           <div style={{ width: 72, height: 72, borderRadius: 20, background: 'linear-gradient(135deg,#1a0a2e,#7b2ff7)', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -189,7 +206,17 @@ export default function AdminDashboard() {
       {/* Metrics Banner Container */}
       <div style={{ background: 'linear-gradient(135deg,#1a0a2e,#7b2ff7)', padding: '48px 0 24px' }}>
         <div className="page-wrap" style={{ padding: '0 20px' }}>
-          <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 800, textAlign: 'left', marginBottom: 20 }}>Command Control Center</h1>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <h1 style={{ color: '#fff', fontSize: 22, fontWeight: 800, margin: 0 }}>Command Control Center</h1>
+            {/* ADDED: UI Nav Header Button to offer alternative manual route exit layout mappings */}
+            <button 
+              onClick={() => navigate('/', { replace: true })}
+              style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', padding: '8px 16px', borderRadius: 10, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            >
+              ← Leave Panel
+            </button>
+          </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10 }}>
             {[
@@ -229,7 +256,7 @@ export default function AdminDashboard() {
         <div className="page-wrap" style={{ padding: '0 12px' }}>
           {loading ? <Spinner /> : (
             <>
-              {/* Tab 1: Official Portal Complaints (Your Original System, Bug-Free) */}
+              {/* Tab 1: Official Portal Complaints */}
               {tab === 'complaints' && (
                 <div className="card shadow" style={{ background: '#fff', borderRadius: 20, padding: 16 }}>
                   <div className="filter-bar" style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
@@ -264,7 +291,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* Tab 2: Infraction Reports (Teammate Feature) */}
+              {/* Tab 2: Infraction Reports */}
               {tab === 'reports' && (
                 reports.length === 0
                   ? <EmptyState icon="🔍" text="All systems clear" sub="No outstanding content violations flags recorded." />
@@ -278,7 +305,7 @@ export default function AdminDashboard() {
                   ))
               )}
 
-              {/* Tab 3: User Content Feed Filtering (Teammate Feature) */}
+              {/* Tab 3: User Content Feed Filtering */}
               {tab === 'posts' && (
                 posts.length === 0 ? <EmptyState icon="📝" text="No active posts" /> : posts.map(p => (
                   <div key={p.id} className="card" style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, border: '1.5px solid var(--border)', textAlign: 'left' }}>
@@ -293,7 +320,7 @@ export default function AdminDashboard() {
                 ))
               )}
 
-              {/* Tab 4: Network Verification Ledger (Teammate Feature) */}
+              {/* Tab 4: Network Verification Ledger */}
               {tab === 'users' && (
                 users.length === 0 ? <EmptyState icon="👥" text="No ledger entries found" /> : users.map(u => (
                   <div key={u.id} className="card" style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -313,7 +340,7 @@ export default function AdminDashboard() {
                 ))
               )}
 
-              {/* Tab 5: SOS Help Emergency Tracker (Teammate Feature) */}
+              {/* Tab 5: SOS Help Emergency Tracker */}
               {tab === 'help' && (
                 helpReqs.length === 0 ? <EmptyState icon="🆘" text="No active emergencies logged" /> : helpReqs.map(h => (
                   <div key={h.id} className="card" style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 12, border: '1.5px solid var(--border)', textAlign: 'left' }}>

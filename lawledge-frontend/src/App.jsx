@@ -2,7 +2,8 @@ import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import { useState } from 'react';
 import { 
   BookOpen, ShieldAlert, Phone, Bot, Eye, EyeOff, 
-  Rss, User, ShieldCheck, Film, Compass, MessageSquare 
+  Rss, User, ShieldCheck, Film, Compass, MessageSquare,
+  Search, Trophy 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -44,17 +45,20 @@ import CreatePost from "./Components/CreatePost";
 
 import "./App.css";
 
-// Integrated Site-Wide Navigation Links
+// Standardized Side Navigation Target Configuration Array
 const SIDEBAR_LINKS = [
-  { to: "/",                     label: "Home Tools",       icon: <Bot size={18} /> },
-  { to: "/feed",                 label: "Justice Feed",     icon: <Rss size={18} /> },
-  { to: "/help",                 label: "Help Line Hub",    icon: <ShieldAlert size={18} /> },
-  { to: "/explore",              label: "Explore Network",  icon: <Compass size={18} /> },
-  { to: "/reels",                label: "Legal Reels",      icon: <Film size={18} /> },
-  { to: "/messages",             label: "Inbox Chat",       icon: <MessageSquare size={18} /> },
-  { to: "/complaints",          label: "File Complaint",   icon: <ShieldCheck size={18} /> },
-  { to: "/approved-complaints", label: "Complaints Portal",icon: <BookOpen size={18} /> },
-  { to: "/profile",              label: "My Profile",       icon: <User size={18} /> },
+  { to: "/",                     label: "Home Tools",        icon: <Bot size={18} /> },
+  { to: "/feed",                 label: "Justice Feed",      icon: <Rss size={18} /> },
+  { to: "/help",                 label: "Help Line Hub",     icon: <ShieldAlert size={18} /> },
+  { to: "/explore",              label: "Explore Network",   icon: <Compass size={18} /> },
+  { to: "/reels",                label: "Legal Reels",       icon: <Film size={18} /> },
+  { to: "/messages",             label: "Inbox Chat",        icon: <MessageSquare size={18} /> },
+  { to: "/complaints",           label: "File Complaint",    icon: <ShieldCheck size={18} /> },
+  { to: "/approved-complaints",   label: "Complaints Portal", icon: <BookOpen size={18} /> },
+  { to: "/track",                label: "Track Complaint",   icon: <Search size={18} /> },
+  { to: "/leaderboard",          label: "Leaderboard",       icon: <Trophy size={18} /> },
+  { to: "/admin",                label: "Admin Dashboard",   icon: <ShieldAlert size={18} /> },
+  { to: "/profile",              label: "My Profile",        icon: <User size={18} /> },
 ];
 
 function NavButton({ active, onClick, icon, label, isAI, highViz }) {
@@ -167,6 +171,8 @@ function AppLayout() {
             <Route path="/approved-complaints" element={<ApprovedComplaints />} />
             <Route path="/track" element={<TrackComplaint />} />
             <Route path="/questions" element={<Questions />} />
+            
+            {/* Fallback Catch-all Route Redirection Map */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
