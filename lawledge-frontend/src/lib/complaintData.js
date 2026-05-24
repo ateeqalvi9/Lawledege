@@ -84,10 +84,35 @@ export const ISSUE_MAPPING = {
  * 2. REFINED CONSTANTS
  */
 export const MULTAN_ZONES = [
-  "Bosan Town", 
-  "Shah Rukn-e-Alam Town", 
-  "Mumtazabad Town", 
-  "Sher Shah Town"
+  "Al-Khair Chowk",
+  "Bahawalpur Road",
+  "BCG Chowk",
+  "Bosan Road",
+  "Buch Executive Villas",
+  "Citi Housing",
+  "DHA Multan",
+  "Fatima Jinnah Town",
+  "Ghanta Ghar & Old City",
+  "Gulgasht Colony",
+  "Hussain Agahi",
+  "Khanewal Road",
+  "Multan Cantt",
+  "Mumtazabad",
+  "New Multan",
+  "Nishtar Road Area",
+  "Northern Bypass",
+  "Officers Colony",
+  "Qasim Bela",
+  "Royal Orchard",
+  "Sadar Bazaar",
+  "Shah Rukn-e-Alam Colony",
+  "Shalimar Colony",
+  "Sher Shah Road",
+  "Southern Bypass",
+  "Suraj Kund Road",
+  "Vehari Road",
+  "WAPDA Town",
+  "Zakariya Town"
 ];
 
 export const SEVERITY_LEVELS = ["Low", "Medium", "High", "Critical"];

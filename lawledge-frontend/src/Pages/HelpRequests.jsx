@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabaseClient';
 import { useAuth } from '../lib/hooks';
 import { Spinner, Badge, EmptyState } from '../Components/SocialUI';
-
+// Helper to ensure the user exists in the core database
 async function ensureUserRow(user) {
   await supabase.from('users').upsert(
     { id: user.id, full_name: user.user_metadata?.full_name || user.email.split('@')[0], is_volunteer: false },
@@ -24,7 +24,7 @@ export default function HelpRequests() {
   const [submitError, setSubmitError] = useState('');
   const [form, setForm] = useState({ title: '', description: '', city: '', area: '', required_volunteers: 1, urgency: 'normal' });
 
-  // Wrapped inside a stable useCallback tracking framework
+  // Retrieve list of help requests and user responses
   const loadRequests = useCallback(async () => {
     setLoading(true);
     try {
@@ -46,7 +46,7 @@ export default function HelpRequests() {
     setLoading(false);
   }, [user]);
 
-  // FIXED: Synchronous state updates isolated via standard safe async transactional task wrapper
+  // Setup initial load
   useEffect(() => { 
     let isMounted = true;
 
@@ -63,6 +63,7 @@ export default function HelpRequests() {
     };
   }, [loadRequests]);
 
+  // Action to volunteer for or cancel a help request
   const respond = async (helpId) => {
     if (!user) { navigate('/login'); return; }
     if (myResponses.has(helpId)) {
@@ -76,6 +77,7 @@ export default function HelpRequests() {
     }
     loadRequests();
   };
+  // Handle creation of new help requests
 
   const createRequest = async () => {
     if (!user) { navigate('/login'); return; }
@@ -138,6 +140,7 @@ export default function HelpRequests() {
         )}
       </div>
 
+      {/* Overlay Modal for Creating New Request */}
       {showCreate && (
         <div style={{ position: 'fixed', inset: 0, background: '#0009', zIndex: 1000, display: 'flex', alignItems: 'flex-end' }} onClick={() => setShowCreate(false)}>
           <div className="slide-up card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 600, margin: '0 auto', borderRadius: '24px 24px 0 0', padding: 24, maxHeight: '90vh', overflowY: 'auto' }}>

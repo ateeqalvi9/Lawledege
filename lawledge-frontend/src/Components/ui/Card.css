@@ -1,7 +1,4 @@
-/* ══════════════════════════════════
-   CARD COMPONENT
-══════════════════════════════════ */
-
+/* Standard Card */
 .card {
   background: rgba(255,255,255,0.92);
   border: 1.5px solid var(--border);

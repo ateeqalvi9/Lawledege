@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 
+// Definition of navigation tabs and their icons
 const tabs = [
   { path: '/feed',        label: 'Home',    icon: (active) => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill={active?'#7b2ff7':'none'} stroke={active?'#7b2ff7':'#7a6d8e'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -33,7 +34,7 @@ export default function BottomNav() {
       <div style={{ display:'flex', justifyContent:'space-around', alignItems:'center', padding:'6px 8px 10px' }}>
         {tabs.map(tab => {
           const active = pathname === tab.path || (tab.path !== '/feed' && pathname.startsWith(tab.path));
-
+          // Special styling for the central "Create" button
           if (tab.special) return (
             <button key={tab.path} onClick={() => navigate('/create')} style={{
               width: 52, height: 52, borderRadius: '50%',

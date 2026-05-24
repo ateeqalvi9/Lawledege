@@ -17,7 +17,7 @@ export default function Feed() {
   const [stories, setStories] = useState([]);
   const PAGE_SIZE = 10;
 
-  // Track the absolute fetch range boundaries directly inside a standard function parameter
+  // Main data loader for posts with pagination support
   const fetchPosts = useCallback(async (reset = false, currentPage = 0) => {
     setLoading(true);
     const from = reset ? 0 : currentPage * PAGE_SIZE;
@@ -62,11 +62,12 @@ export default function Feed() {
     else setPosts(prev => [...prev, ...enriched]);
     setLoading(false);
   }, [filter, user]);
-
+  // Get the most recent high-priority help request
   const fetchHelpBanner = useCallback(async () => {
     const { data } = await supabase.from('help_requests').select('*, users(full_name)').eq('status', 'open').order('created_at', { ascending: false }).limit(1);
     if (data && data.length) setHelpBanner(data[0]);
   }, []);
+  // Load visual stories (reels) for the top bar
 
   const fetchStories = useCallback(async () => {
     const { data } = await supabase.from('posts')
@@ -78,13 +79,13 @@ export default function Feed() {
     setStories(data || []);
   }, []);
 
-  // Sync initial layout mount state cleanly
+  // Component startup and filter change synchronization
   useEffect(() => {
     let isMounted = true;
 
     const loadInitialData = async () => {
       if (isMounted) {
-        await fetchPosts(true, 0); // Pass baseline pagination values directly
+        await fetchPosts(true, 0); 
         await fetchHelpBanner();
         await fetchStories();
       }
@@ -97,7 +98,7 @@ export default function Feed() {
     };
   }, [filter, user, fetchPosts, fetchHelpBanner, fetchStories]);
 
-  // FIXED: Event Handler directly computes pagination steps synchronously instead of using a side-effect hook loop
+  // Triggered when user clicks "Load More" at bottom of feed
   const handleLoadMore = async () => {
     const nextPageIndex = Math.floor(posts.length / PAGE_SIZE);
     await fetchPosts(false, nextPageIndex);
@@ -108,7 +109,7 @@ export default function Feed() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Sticky header */}
+      {/* Navigation and Branding */}
       <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)' }}>
         <div className="rainbow-bar" />
         <div className="page-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px' }}>
@@ -135,7 +136,7 @@ export default function Feed() {
             </button>
           </div>
         </div>
-        {/* Filter chips */}
+        {/* Category Filters */}
         <div style={{ overflowX: 'auto', display: 'flex', gap: 8, padding: '0 20px 10px' }}>
           <div className="page-wrap" style={{ display: 'flex', gap: 8, width: '100%' }}>
             {FILTERS.map(f => (
@@ -146,7 +147,7 @@ export default function Feed() {
       </div>
 
       <div className="bottom-safe page-wrap" style={{ padding: '12px 16px 0' }}>
-        {/* Urgent help banner */}
+        {/* Urgent Alert Banner */}
         {helpBanner && (
           <div onClick={() => navigate('/help')} className="urgent-pulse" style={{ background: 'linear-gradient(135deg,#ff1744,#ff6d00)', borderRadius: 16, padding: '14px 16px', marginBottom: 14, cursor: 'pointer' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -162,7 +163,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Guest banner */}
+        {/* Sign-up Prompt for Unauthenticated Users */}
         {!user && (
           <div style={{ background: 'linear-gradient(135deg,#f0e8ff,#ffe8f5)', borderRadius: 18, padding: 20, marginBottom: 16, border: '1.5px solid var(--border)', textAlign: 'center' }}>
             <div style={{ fontWeight: 800, fontSize: 17, color: 'var(--text)', marginBottom: 6 }}>Join 12,000+ Volunteers</div>
@@ -174,7 +175,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Stories */}
+        {/* Visual Reels Horizontal List */}
         {stories.length > 0 && (
           <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 10, marginBottom: 14 }}>
             {stories.map(story => {
@@ -196,7 +197,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Create post row */}
+        {/* Quick Post Input */}
         {user && (
           <div style={{ background: '#fff', borderRadius: 16, padding: '12px 14px', border: '1.5px solid var(--border)', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', boxShadow: 'var(--shadow)' }} onClick={() => navigate('/create')}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#7b2ff7,#ff0080)', display: 'flex', alignItems: 'center', justifyBontent: 'center', color: '#fff', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>{initials}</div>
@@ -205,7 +206,7 @@ export default function Feed() {
           </div>
         )}
 
-        {/* Posts Rendering Grid */}
+        {/* Main Feed Content */}
         {loading && posts.length === 0 ? <Spinner /> : posts.length === 0 ? (
           <EmptyState icon="📭" text="No posts yet" sub="Be the first to share!" />
         ) : (

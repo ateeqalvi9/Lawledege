@@ -16,9 +16,10 @@ export default function Messages() {
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
 
-  // FIXED: Pure state to hold our clock snapshot safely outside the raw render loop body
+  // Relative time tracker
   const [timeSnapshot, setTimeSnapshot] = useState(null);
 
+  // Retrieve list of recent conversations
   const fetchConversations = useCallback(async () => {
     if (!user) return;
     try {
@@ -56,6 +57,7 @@ export default function Messages() {
     setLoading(false);
   }, [user]);
 
+  // Fetch actual message history for a specific person
   const fetchMessages = useCallback(async (partnerId) => {
     if (!user || !partnerId) return;
     const { data } = await supabase.from('messages')
@@ -64,6 +66,7 @@ export default function Messages() {
       .order('created_at', { ascending: true });
     setMessages(data || []);
   }, [user]);
+  // Open a specific chat
 
   const handleSelectConversation = async (conv) => {
     setActiveConv(conv);
@@ -72,13 +75,13 @@ export default function Messages() {
     }
   };
 
+  // Component init logic
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     
     let isMounted = true;
     const initializeChatHistory = async () => {
       if (isMounted) {
-        // SAFE: Capturing time baseline inside an asynchronous side effect loop, keeping render pure
         setTimeSnapshot(Date.now());
         
         await fetchConversations();
@@ -99,11 +102,12 @@ export default function Messages() {
     return () => { isMounted = false; };
   }, [user, location.state, fetchConversations, fetchMessages, navigate]);
 
+  // Auto-scroll to bottom on new messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Real-time subscription workflow channel
+  // Listen for new incoming messages in real-time
   useEffect(() => {
     if (!user) return;
     const sub = supabase.channel('messages').on('postgres_changes', {
@@ -113,13 +117,13 @@ export default function Messages() {
       if (activeConv && (payload.new.sender_id === activeConv.id || payload.new.receiver_id === activeConv.id)) {
         setMessages(prev => [...prev, payload.new]);
       }
-      // Refresh time snapshot token on incoming data pulses smoothly
       setTimeSnapshot(Date.now());
       fetchConversations();
     }).subscribe();
     
     return () => { supabase.removeChannel(sub); };
   }, [user, activeConv, fetchConversations]);
+  // Message submission logic
 
   const sendMessage = async () => {
     if (!newMsg.trim() || !activeConv) return;
@@ -134,11 +138,10 @@ export default function Messages() {
     fetchConversations();
   };
 
-  // Pure utility calculation map expression
+  // UI Formatting for message timestamps
   const formatTimeDisplay = (ts, currentSnapshotTime) => {
     if (!ts) return '';
-    // If the snapshot state hasn't mounted yet, default safely to the message creation base time
-    const baseClock = currentSnapshotTime || new Date(ts).getTime();
+    const baseClock = currentSnapshotTime || new Date().getTime();
     const d = new Date(ts);
     const diff = baseClock - d.getTime(); 
     if (diff < 3600000) return `${Math.max(0, Math.floor(diff / 60000))}m`;
@@ -148,12 +151,12 @@ export default function Messages() {
 
   if (!user) return null;
 
-  // Active Individual Inbox Chat View
+  // View 1: Active Chat Conversation
   if (activeConv) {
     const initials = activeConv.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
     return (
       <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
-        {/* Chat header */}
+        {/* Message Header */}
         <div style={{ background: '#fff', borderBottom: '1px solid var(--border)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, position: 'relative' }}>
           <div style={{ height: 3, position: 'absolute', top: 0, left: 0, right: 0, background: 'linear-gradient(90deg,#ff0080,#7b2ff7)' }} />
           <button onClick={() => setActiveConv(null)} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: 0 }}>←</button>
@@ -164,7 +167,7 @@ export default function Messages() {
           </div>
         </div>
 
-        {/* Messages Feed Grid */}
+        {/* Message Bubble List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 12px' }}>
           {messages.map((m, i) => {
             const isMine = m.sender_id === user.id;
@@ -189,7 +192,7 @@ export default function Messages() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Text Entry Panel */}
+        {/* Input Bar */}
         <div style={{ background: '#fff', borderTop: '1px solid var(--border)', padding: '12px 12px 28px', display: 'flex', gap: 8, flexShrink: 0 }}>
           <input value={newMsg} onChange={e => setNewMsg(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendMessage()}
             placeholder="Type a message..."
@@ -203,7 +206,7 @@ export default function Messages() {
     );
   }
 
-  // Baseline Conversations Overview List
+  // View 2: Inbox Overview (Conversation List)
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       <div style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>

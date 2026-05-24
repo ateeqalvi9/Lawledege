@@ -2,24 +2,24 @@ import { getComplaintPDFBlob } from "./pdfGenerator";
 import emailjs from '@emailjs/browser';
 
 export const DEPARTMENT_DIRECTORY = [
-  { name: "WASA Multan",                          phone: "923166461653", email: "wasa.multan@gov.pk" },
-  { name: "MEPCO",                                phone: "923166461653", email: "mepco@gov.pk" },
-  { name: "CPO / Women Police Station",           phone: "923166461653", email: "cpo.multan@punjabpolice.gov.pk" },
-  { name: "SNGPL (Sui Northern Gas)",             phone: "923166461653", email: "sngpl@gov.pk" },
-  { name: "MDA / Metropolitan Corp",              phone: "923166461653", email: "mda.multan@gov.pk" },
-  { name: "MWMC (Multan Waste Management Co)",    phone: "923166461653", email: "mwmc.multan@gov.pk" },
-  { name: "EPA Punjab",                           phone: "923166461653", email: "epa.punjab@gov.pk" },
-  { name: "District Consumer Court Multan",       phone: "923166461653", email: "dcc.multan@gov.pk" },
-  { name: "Civil Courts Multan",                  phone: "923166461653", email: "civilcourts.multan@gov.pk" },
-  { name: "Punjab Healthcare Commission",         phone: "923166461653", email: "phc.punjab@gov.pk" },
-  { name: "Directorate of Education Multan",      phone: "923166461653", email: "doe.multan@gov.pk" },
-  { name: "PTA / FIA Cyber Crime Wing",           phone: "923166461653", email: "pta.fia@gov.pk" },
-  { name: "City Traffic Police Multan",           phone: "923166461653", email: "traffic.multan@punjabpolice.gov.pk" },
-  { name: "Punjab Food Authority (PFA)",          phone: "923166461653", email: "pfa.punjab@gov.pk" },
-  { name: "Anti-Corruption Establishment (ACE) Punjab", phone: "923166461653", email: "ace.punjab@gov.pk" },
-  { name: "Child Protection & Welfare Bureau Multan",   phone: "923166461653", email: "cpwb.multan@gov.pk" },
-  { name: "FIA Cyber Crime Wing",                 phone: "923166461653", email: "fia.cyber@gov.pk" },
-  { name: "Livestock & Dairy Development Department",   phone: "923166461653", email: "lddd.punjab@gov.pk" },
+  { name: "WASA Multan", phone: "923366363566", email: "wasa.multan@gov.pk" },
+  { name: "MEPCO", phone: "923366363566", email: "mepco@gov.pk" },
+  { name: "CPO / Women Police Station", phone: "923366363566", email: "cpo.multan@punjabpolice.gov.pk" },
+  { name: "SNGPL", phone: "923366363566", email: "sngpl@gov.pk" },
+  { name: "MDA / Metropolitan Corp", phone: "923366363566", email: "mda.multan@gov.pk" },
+  { name: "Multan Waste Management Co", phone: "923366363566", email: "mwmc.multan@gov.pk" },
+  { name: "EPA Punjab", phone: "923366363566", email: "epa.punjab@gov.pk" },
+  { name: "District Administration", phone: "923366363566", email: "dcc.multan@gov.pk" },
+  { name: "Civil Courts Multan", phone: "923366363566", email: "civilcourts.multan@gov.pk" },
+  { name: "Health Dept / PMC", phone: "923366363566", email: "phc.punjab@gov.pk" },
+  { name: "Directorate of Education", phone: "923366363566", email: "doe.multan@gov.pk" },
+  { name: "PTA / FIA Cyber Crime", phone: "923366363566", email: "pta.fia@gov.pk" },
+  { name: "City Traffic Police Multan", phone: "923366363566", email: "traffic.multan@punjabpolice.gov.pk" },
+  { name: "Punjab Food Authority", phone: "923366363566", email: "pfa.punjab@gov.pk" },
+  { name: "Anti-Corruption Establishment", phone: "923366363566", email: "ace.punjab@gov.pk" },
+  { name: "Child Protection Bureau", phone: "923366363566", email: "cpwb.multan@gov.pk" },
+  { name: "FIA Cyber Crime Wing", phone: "923366363566", email: "fia.cyber@gov.pk" },
+  { name: "Livestock Dept", phone: "923366363566", email: "lddd.punjab@gov.pk" },
 ];
 
 export async function sendComplaintPDFEmail(complaint, authority, lawSection) {
@@ -61,7 +61,26 @@ export function handleOfficialSubmissionFlow(complaint) {
     return;
   }
 
-  const deptInfo = DEPARTMENT_DIRECTORY.find(d => d.name === complaint.assigned_authority);
+  const normalize = (s) =>
+    String(s || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+
+  const target = normalize(complaint.assigned_authority);
+
+  let deptInfo = DEPARTMENT_DIRECTORY.find(
+    (d) => normalize(d.name) === target
+  );
+
+  if (!deptInfo) {
+    // Fallback: partial match to handle dropdown ↔ directory naming differences.
+    deptInfo = DEPARTMENT_DIRECTORY.find((d) => {
+      const dn = normalize(d.name);
+      return dn.includes(target) || target.includes(dn);
+    });
+  }
+
   if (!deptInfo) {
     alert(`No WhatsApp contact found for: ${complaint.assigned_authority}`);
     return;
@@ -76,6 +95,12 @@ export function handleOfficialSubmissionFlow(complaint) {
     `Kindly review the attached PDF for full details and take necessary action.\n\n` +
     `Verify: https://lawledgeportal.com/track?code=${complaint.tracking_code}`;
 
-  const whatsappUrl = `https://wa.me/${deptInfo.phone}?text=${encodeURIComponent(officialMessage)}`;
+  const phone = String(deptInfo.phone).replace(/[^\d]/g, "");
+
+  // Use WhatsApp “phone” parameter to avoid any wa.me path formatting issues.
+  // Phone must be digits-only (no +, spaces, dashes).
+  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(
+    officialMessage
+  )}`;
   window.open(whatsappUrl, "_blank");
 }

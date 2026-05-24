@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../lib/hooks'; // FIXED: Aligned hook to the unified shared repository channel
+import { useAuth } from '../lib/hooks';
 import { supabase } from '../api/supabaseClient';
-import { Avatar, Badge } from './SocialUI'; // Points cleanly to your global social UI wrapper components
+import { Avatar, Badge } from './SocialUI';
 
 export default function PostCard({ post, onRefresh }) {
   const { user } = useAuth();
@@ -18,6 +18,7 @@ export default function PostCard({ post, onRefresh }) {
   const name = post.users?.full_name || 'Volunteer';
   const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
+  // Interaction Handlers
   const handleLike = async () => {
     if (!user) { navigate('/login'); return; }
     try {
@@ -74,7 +75,7 @@ export default function PostCard({ post, onRefresh }) {
     }
   };
 
-  // Pure mathematical converter expression captures current baseline snapshot
+  // Format creation date
   const formatCardTimeBase = (ts) => {
     if (!ts) return 'Recently';
     const d = new Date(ts);
@@ -83,7 +84,7 @@ export default function PostCard({ post, onRefresh }) {
 
   return (
     <div className="card" style={{ background: '#fff', borderRadius: 16, padding: 16, marginBottom: 14, border: '1.5px solid var(--border)', boxShadow: 'var(--shadow)', textAlign: 'left' }}>
-      {/* Header Block Row */}
+      {/* User Info & Profile Link */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
         <div onClick={() => post.user_id && navigate(`/profile/${post.user_id}`)} style={{ cursor: 'pointer' }}>
           <Avatar initials={initials} src={post.volunteer_profiles?.profile_pic} size={40} ring={post.volunteer_profiles?.verified} />
@@ -101,10 +102,10 @@ export default function PostCard({ post, onRefresh }) {
         </div>
       </div>
 
-      {/* Main Content Layout Body */}
+      {/* Post Content */}
       <p style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: '0 0 14px' }}>{post.content}</p>
 
-      {/* Attachment Media Layout Checks */}
+      {/* Media Attachments */}
       {post.media && post.media.length > 0 && (
         <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid var(--border)', marginBottom: 14, background: '#000' }}>
           {post.media[0].match(/\.(mp4|webm|ogg|mov)$/i) ? (
@@ -115,7 +116,7 @@ export default function PostCard({ post, onRefresh }) {
         </div>
       )}
 
-      {/* Engagement Interaction Row Buttons */}
+      {/* Interaction Bar */}
       <div style={{ display: 'flex', gap: 16, borderTop: '1px solid var(--border)', paddingTop: 10 }}>
         <button onClick={handleLike} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: liked ? '#ff0080' : 'var(--muted)', fontWeight: 600 }}>
           <span>{liked ? '❤️' : '🤍'}</span>
@@ -130,7 +131,7 @@ export default function PostCard({ post, onRefresh }) {
         </button>
       </div>
 
-      {/* Real-time Sub-Comment Section Drawer Toggle */}
+      {/* Comments Section */}
       {showComments && (
         <div style={{ marginTop: 14, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
           {loadingComments ? <div style={{ fontSize: 12, color: 'var(--muted)' }}>Loading context tracks...</div> : (

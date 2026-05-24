@@ -1,6 +1,4 @@
-/* ═══════════════════════════════════════
-   STATUS TRACKER PAGE
-═══════════════════════════════════════ */
+/* Visual Tracker */
 .status-page { padding-bottom: 3rem; max-width: 800px; margin: 0 auto; }
 .status-title {
   font-size: clamp(1.6rem, 3.5vw, 2.2rem);

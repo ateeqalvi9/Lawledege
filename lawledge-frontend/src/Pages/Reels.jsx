@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../api/supabaseClient';
 import { useAuth } from '../lib/hooks'; 
 import { Avatar } from '../Components/SocialUI'; // Case matching folder path mapping alignment
-
+// Static data used when no posts are found in the database
 // Mock fallback reels with static deterministic metrics to prevent render calculations traps
 const MOCK_REELS = [
   { id: '1', content: "Know Your Rights: Every citizen has the right to know the FIR number within 24 hours of filing a complaint. Don't let anyone deny you this!", author: 'Ayesha Malik', city: 'Lahore', likes: 2340, views: 18400, type: 'Awareness', gradient: 'linear-gradient(135deg,#7b2ff7,#ff0080)' },
@@ -23,7 +23,7 @@ export default function Reels() {
   const containerRef = useRef(null);
   const touchStartY = useRef(0);
 
-  // FIXED: Memoized data retrieval method shields view states against cascading rendering triggers
+  // Fetch legal stories from the database
   const fetchReels = useCallback(async () => {
     try {
       const { data } = await supabase.from('posts')
@@ -42,7 +42,6 @@ export default function Reels() {
           'linear-gradient(135deg,#e040fb,#7b2ff7)'
         ];
         
-        // FIXED: Eliminated Math.random() inline data mutation loops entirely
         setReels(data.map((p, i) => ({ 
           ...p, 
           gradient: gradients[i % gradients.length], 
@@ -60,7 +59,7 @@ export default function Reels() {
     }
   }, []);
 
-  // FIXED: Isolates mounting context asynchronously to safeguard transactional purity benchmarks
+  // Initial setup
   useEffect(() => {
     let isMounted = true;
     
@@ -76,9 +75,10 @@ export default function Reels() {
     };
   }, [fetchReels]);
 
+  // Navigation logic
   const goNext = () => setCurrentIndex(i => Math.min(i + 1, reels.length - 1));
   const goPrev = () => setCurrentIndex(i => Math.max(i - 1, 0));
-
+  // Swipe handlers for mobile
   const handleTouchStart = e => { touchStartY.current = e.touches[0].clientY; };
   const handleTouchEnd = e => {
     const diff = touchStartY.current - e.changedTouches[0].clientY;
@@ -110,7 +110,7 @@ export default function Reels() {
     <div ref={containerRef} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}
       style={{ height: '100vh', background: '#000', position: 'relative', overflow: 'hidden', userSelect: 'none' }}>
 
-      {/* Reel background */}
+      {/* Visual Background with animated transition effect */}
       <div style={{ position: 'absolute', inset: 0, background: reel.gradient, transition: 'background 0.5s' }}>
         {/* Decorative circles */}
         <div style={{ position: 'absolute', top: -100, right: -100, width: 300, height: 300, borderRadius: '50%', background: '#ffffff10' }} />
@@ -124,18 +124,18 @@ export default function Reels() {
         ))}
       </div>
 
-      {/* Nav arrows */}
+      {/* Navigation Controls */}
       <button onClick={goPrev} disabled={currentIndex === 0} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', background: '#ffffff22', border: 'none', borderRadius: '50%', width: 40, height: 40, color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: currentIndex === 0 ? 0.3 : 1, zIndex: 10 }}>‹</button>
       <button onClick={goNext} disabled={currentIndex === reels.length - 1} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: '#ffffff22', border: 'none', borderRadius: '50%', width: 40, height: 40, color: '#fff', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: currentIndex === reels.length - 1 ? 0.3 : 1, zIndex: 10 }}>›</button>
 
-      {/* Content Meta Wrapper */}
+      {/* Overlay Information */}
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '60px 16px 90px' }}>
-        {/* Type badge */}
+        {/* Category Label */}
         <div style={{ marginBottom: 12, display: 'flex' }}>
           <span style={{ background: '#ffffff22', backdropFilter: 'blur(8px)', color: '#fff', padding: '4px 12px', borderRadius: 20, fontSize: 11, fontWeight: 700, letterSpacing: '0.05em' }}>{reel.type}</span>
         </div>
 
-        {/* Author Details block */}
+        {/* Creator Info */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
           <div style={{ cursor: 'pointer' }} onClick={() => reel.user_id && navigate(`/profile/${reel.user_id}`)}>
             <Avatar initials={authorInitials} src={reel.volunteer_profiles?.profile_pic} size={42} ring />
@@ -149,10 +149,10 @@ export default function Reels() {
           )}
         </div>
 
-        {/* Text content layout info */}
+        {/* Content Body */}
         <p style={{ color: '#fff', fontSize: 15, lineHeight: 1.7, fontWeight: 500, marginBottom: 16, textShadow: '0 1px 4px rgba(0,0,0,0.3)', textAlign: 'left' }}>{reel.content}</p>
 
-        {/* Dynamic Engagement Stats */}
+        {/* Engagement Stats */}
         <div style={{ display: 'flex', gap: 6, color: '#ffffffaa', fontSize: 12 }}>
           <span>{(reel.views || 0).toLocaleString()} views</span>
           <span>·</span>
@@ -160,7 +160,7 @@ export default function Reels() {
         </div>
       </div>
 
-      {/* Action buttons panel (Right Vertical Column) */}
+      {/* Vertical Action Menu */}
       <div style={{ position: 'absolute', right: 14, bottom: 120, display: 'flex', flexDirection: 'column', gap: 20, alignItems: 'center', zIndex: 10 }}>
         {[
           { icon: liked.has(reel.id) ? '❤️' : '🤍', label: ((reel.likes || 0) + (liked.has(reel.id) ? 1 : 0)).toLocaleString(), action: () => toggleLike(reel.id) },
@@ -175,7 +175,7 @@ export default function Reels() {
         ))}
       </div>
 
-      {/* Guest Invitation Panel Overlay */}
+      {/* Call to Action for Guests */}
       {!user && (
         <div style={{ position: 'absolute', bottom: 84, left: 0, right: 0, padding: '0 16px', zIndex: 10 }}>
           <div style={{ background: '#ffffff18', backdropFilter: 'blur(12px)', borderRadius: 14, padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid #ffffff30' }}>
@@ -185,7 +185,7 @@ export default function Reels() {
         </div>
       )}
 
-      {/* Swipe Nav Hint Tag */}
+      {/* Navigation Hint */}
       <div style={{ position: 'absolute', top: 50, left: 0, right: 0, textAlign: 'center', color: '#ffffff66', fontSize: 11 }}>
         Swipe up/down to browse
       </div>

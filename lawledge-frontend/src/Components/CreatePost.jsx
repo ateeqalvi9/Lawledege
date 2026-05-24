@@ -6,8 +6,7 @@ import { Spinner } from './SocialUI';
 
 const FILTERS = ['Success Story', 'Help Request', 'Awareness', 'Activity Update', 'Gratitude'];
 
-// FIXED: Extracted entirely OUTSIDE the main component rendering body scope.
-// This prevents it from being repeatedly re-created during state updates.
+// Custom UI Switch component
 const Toggle = ({ label, value, onChange }) => (
   <label style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14, cursor: 'pointer' }}>
     <div 
@@ -29,7 +28,7 @@ const Toggle = ({ label, value, onChange }) => (
 );
 
 export default function CreatePost() {
-  const { user } = useAuth(); // FIXED: Removed 'profile' if unused to prevent unreferenced assignment warnings
+  const { user } = useAuth(); 
   const navigate = useNavigate();
 
   const [content, setContent] = useState('');
@@ -40,6 +39,7 @@ export default function CreatePost() {
   const [error, setError] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
 
+  // Post submission logic
   const handleCreatePost = async () => {
     if (!user) { navigate('/login'); return; }
     if (!content.trim()) { setError('Post content cannot be empty.'); return; }
@@ -94,7 +94,6 @@ export default function CreatePost() {
           <input type="text" value={mediaUrl} onChange={e => setMediaUrl(e.target.value)} placeholder="https://example.com/image-or-video.mp4" style={{ width: '100%', padding: 12, borderRadius: 12, border: '1.5px solid var(--border)', fontSize: 14, boxSizing: 'border-box' }} />
         </div>
 
-        {/* Instantiated Safely */}
         <Toggle label="Post as Reel / Story" value={isStory} onChange={() => setIsStory(p => !p)} />
         <Toggle label="Save as Draft" value={isDraft} onChange={() => setIsDraft(p => !p)} />
 

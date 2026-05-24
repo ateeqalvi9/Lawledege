@@ -16,6 +16,7 @@ export default function Register() {
   const set = (k,v) => setForm(p => ({...p,[k]:v}));
   const toggleSkill = s => set('skills', form.skills.includes(s) ? form.skills.filter(x=>x!==s) : [...form.skills, s]);
 
+  // Navigation logic between multi-step forms
   const next = () => {
     setError('');
     if (step === 1) {
@@ -29,6 +30,7 @@ export default function Register() {
     setStep(s => s + 1);
   };
 
+  // Core registration workflow
   const register = async () => {
     setLoading(true); setError('');
     try {
@@ -97,6 +99,7 @@ export default function Register() {
     setLoading(false);
   };
 
+  // Reusable input component for cleaner JSX
   const inp = (label, key, type='text', placeholder='') => (
     <div key={key} style={{ marginBottom:14 }}>
       <div style={{ fontSize:12, fontWeight:600, color:'var(--muted)', marginBottom:6 }}>{label}</div>
@@ -111,7 +114,7 @@ export default function Register() {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
-      {/* Header */}
+      {/* Step Visualization Header */}
       <div style={{ background:'linear-gradient(135deg,#7b2ff7,#ff0080)', padding:'48px 24px 60px', textAlign:'center', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:-40, right:-40, width:160, height:160, borderRadius:'50%', background:'#ffffff10' }}/>
         <div style={{ marginBottom:12 }}>

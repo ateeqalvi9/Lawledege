@@ -5,13 +5,12 @@ import { useAuth } from '../lib/hooks'; // Shifted to centralized hooks channel
 
 export default function Login() {
   const navigate = useNavigate();
-  // FIXED: Extracted the active 'login' module handle if needed, or left clean. 
-  // Removed unused 'logout' variable destructuring entirely.
-  useAuth(); 
+  useAuth(); // Hook into authentication context
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // Handle sign-in process
 
   const handleLoginSubmit = async () => {
     if (!email || !password) { setError('Please fill all fields'); return; }

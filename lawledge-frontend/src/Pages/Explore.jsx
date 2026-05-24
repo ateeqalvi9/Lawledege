@@ -4,7 +4,7 @@ import { supabase } from '../api/supabaseClient';
 import { Avatar, Spinner, Badge, EmptyState } from '../Components/SocialUI';
 import { useAuth } from '../lib/hooks'; 
 
-// Static metadata array architecture containing concrete member stats to decouple render loop from random numbers
+// Local fallback data for communities
 const MOCK_COMMUNITIES = [
   { id: '1', name: "Women Safety Volunteers", city: 'All Pakistan', members: 1240, url: 'https://www.facebook.com/groups/womensafetypk' },
   { id: '2', name: "Punjab Legal Volunteers", city: 'Punjab', members: 890, url: 'https://www.facebook.com/groups/punjablegal' },
@@ -31,7 +31,7 @@ export default function Explore() {
   const CITIES = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Faisalabad', 'Peshawar', 'Rawalpindi'];
   const SKILLS = ['Legal Awareness', 'First Aid', 'Cyber Security', 'FIR Filing', "Women's Rights"];
 
-  // Stabilized data pipeline token preventing cascading update triggers
+  // Main data fetch for volunteers and communities
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -57,7 +57,7 @@ export default function Explore() {
     setLoading(false);
   }, [user]);
 
-  // FIXED: Asynchronous wrapper pattern completely decouples component mounting and async updates 
+  // Initial load
   useEffect(() => { 
     let isMounted = true;
 
@@ -74,6 +74,7 @@ export default function Explore() {
     };
   }, [fetchData]);
 
+  // Follow/Unfollow action
   const toggleFollow = async (targetId) => {
     if (!user) { navigate('/login'); return; }
     if (following.has(targetId)) {
@@ -85,6 +86,7 @@ export default function Explore() {
     }
   };
 
+  // Filter logic based on search input and selected tags
   const filtered = volunteers.filter(v => {
     const name = v.users?.full_name?.toLowerCase() || '';
     const matchSearch = !search || name.includes(search.toLowerCase()) || (v.location || '').toLowerCase().includes(search.toLowerCase());
@@ -120,7 +122,7 @@ export default function Explore() {
       <div className="bottom-safe" style={{ padding: '16px 12px 0' }}>
         {loading ? <Spinner /> : (
           <>
-            {/* Spotlight Banner Sub-View */}
+            {/* Featured Volunteer Banner */}
             {spotlightUser && !search && (
               <div onClick={() => navigate(`/profile/${spotlightUser.user_id}`)} style={{ background: 'linear-gradient(135deg,#7b2ff7,#ff0080,#ff8c00)', borderRadius: '20px', padding: '20px', marginBottom: '20px', cursor: 'pointer' }}>
                 <div style={{ fontSize: '11px', color: '#ffffffaa', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '10px' }}>VOLUNTEER OF THE MONTH</div>
@@ -137,7 +139,7 @@ export default function Explore() {
               </div>
             )}
 
-            {/* Social Communities Component Grid */}
+            {/* Communities Grid */}
             {!search && (
               <div style={{ marginBottom: '20px' }}>
                 <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--text)', marginBottom: '12px', textAlign: 'left' }}>Volunteer Communities</div>
@@ -156,7 +158,7 @@ export default function Explore() {
               </div>
             )}
 
-            {/* Skill Selector Anchor Section */}
+            {/* Skill Filters */}
             {!search && (
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--text)', marginBottom: '10px', textAlign: 'left' }}>Filter by Skill</div>
@@ -168,7 +170,7 @@ export default function Explore() {
               </div>
             )}
 
-            {/* Primary Verified Volunteers Dynamic Grid */}
+            {/* Main Volunteer List */}
             <div style={{ fontWeight: 800, fontSize: '16px', color: 'var(--text)', marginBottom: '12px', textAlign: 'left' }}>
               {search ? `Results for "${search}"` : 'Recommended Volunteers'}
             </div>

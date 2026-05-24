@@ -10,10 +10,10 @@ export default function Notifications() {
   const [notifs, setNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Pure state to store our current runtime snapshot safely outside the raw render calculations
+  // State to track time for "time ago" calculations
   const [timeSnapshot, setTimeSnapshot] = useState(null);
 
-  // Wrapped inside a stable useCallback tracking framework to satisfy React dependency rules
+  // Main data fetcher for all activity types
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
     
@@ -52,14 +52,14 @@ export default function Notifications() {
     setLoading(false);
   }, [user]);
 
-  // Separates mounting transitions securely via a safe async transactional mount flag
+  // Setup and initial load
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     
     let isMounted = true;
     const initializeNotificationHub = async () => {
       if (isMounted) {
-        setTimeSnapshot(Date.now()); // SAFE: Capturing impure clock snapshot within a non-render side-effect loop
+        setTimeSnapshot(Date.now()); // Set baseline time for relative stamps
         await fetchNotifications();
       }
     };
@@ -70,9 +70,9 @@ export default function Notifications() {
     };
   }, [user, navigate, fetchNotifications]);
 
-  // FIXED: 100% Pure mathematical converter utility. Removed any fallback calls to Date.now()
+  // Helper to format timestamps naturally
   const formatTimeAgo = (ts, snapshotBase) => {
-    if (!ts || !snapshotBase) return 'Recently'; // Deterministic output strategy prevents render engine panic
+    if (!ts || !snapshotBase) return 'Recently';
     
     const diff = snapshotBase - new Date(ts).getTime();
     const m = Math.floor(diff / 60000);
@@ -88,7 +88,7 @@ export default function Notifications() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Sticky header view container */}
+      {/* Navigation Header */}
       <div style={{ background: '#fff', borderBottom: '1px solid var(--border)' }}>
         <div style={{ height: 3, background: 'linear-gradient(90deg,#ff0080,#ff8c00,#ffd700,#00c851,#00bcd4,#7b2ff7)' }} />
         <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -97,7 +97,7 @@ export default function Notifications() {
         </div>
       </div>
 
-      {/* Notifications view stream layout block */}
+      {/* Notification List */}
       <div style={{ padding: '12px 12px 80px' }}>
         {loading ? <Spinner /> : notifs.length === 0 ? (
           <EmptyState icon="🔔" text="No notifications yet" sub="Start interacting with the community!" />

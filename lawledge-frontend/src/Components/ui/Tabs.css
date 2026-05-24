@@ -1,6 +1,4 @@
-/* ══════════════════════════════════
-   TABS COMPONENT
-══════════════════════════════════ */
+/* Tabbed Navigation */
 
 .tabs { display: flex; flex-direction: column; gap: 0; }
 

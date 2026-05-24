@@ -41,7 +41,7 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
 
-  // FIXED: Memoized callback pipeline ensures absolute layout data stability
+  // Fetch all user details, stats, and related posts
   const fetchProfile = useCallback(async () => {
     if (!targetId) return;
     setLoading(true);
@@ -80,7 +80,7 @@ export default function Profile() {
     setLoading(false);
   }, [targetId, user, isOwn]);
 
-  // FIXED: Safe transactional runtime block isolates mount execution loops
+  // Setup page data
   useEffect(() => { 
     let isMounted = true;
     
@@ -96,6 +96,7 @@ export default function Profile() {
     };
   }, [fetchProfile]);
 
+  // Handle Follow/Unfollow interaction
   const toggleFollow = async () => {
     if (!user) { navigate('/login'); return; }
     if (isFollowing) {
@@ -109,6 +110,7 @@ export default function Profile() {
     }
   };
 
+  // Save profile edits to the database
   const saveProfile = async () => {
     setSaving(true);
     await supabase.from('volunteer_profiles').update({
@@ -124,6 +126,7 @@ export default function Profile() {
     fetchProfile();
   };
 
+  // Handle profile or cover photo uploads
   const handlePhotoUpload = async (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -173,13 +176,13 @@ export default function Profile() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Cover photo */}
+      {/* Header Visuals */}
       <div style={{ position: 'relative', height: 200 }}>
         {profileData?.cover_photo
           ? <img src={profileData.cover_photo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="cover" />
           : <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,#7b2ff7,#ff0080,#ff8c00)' }} />
         }
-        {/* Overlay buttons */}
+        {/* Floating Controls */}
         <div style={{ position: 'absolute', top: 12, left: 12 }}>
           <button onClick={() => navigate(-1)} style={{ background: '#0006', border: 'none', borderRadius: 10, padding: '7px 14px', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: 13, backdropFilter: 'blur(8px)' }}>← Back</button>
         </div>
@@ -198,10 +201,9 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* FIXED: Removed duplicate 'marginTop' key specification error from object properties */}
       <div style={{ padding: '0 16px', marginBottom: 16, maxWidth: 600, margin: '0 auto', marginTop: -48 }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 12 }}>
-          {/* Avatar with upload */}
+          {/* User Image/Avatar */}
           <div style={{ position: 'relative' }}>
             <div style={{ padding: 3, background: 'linear-gradient(135deg,#7b2ff7,#ff0080,#ff8c00)', borderRadius: '50%', boxShadow: '0 4px 20px rgba(123,47,247,0.4)' }}>
               <div style={{ width: 90, height: 90, borderRadius: '50%', background: profileData?.profile_pic ? 'transparent' : '#7b2ff722', border: '3px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: 'var(--primary)', overflow: 'hidden', fontFamily: "'Playfair Display',serif" }}>
@@ -223,7 +225,7 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Action buttons */}
+          {/* Profile Primary Actions */}
           <div style={{ display: 'flex', gap: 8, paddingBottom: 4 }}>
             {isOwn ? (
               <button onClick={() => setEditing(true)} style={{ background: 'linear-gradient(135deg,#7b2ff7,#ff0080)', color: '#fff', border: 'none', borderRadius: 12, padding: '10px 20px', fontWeight: 700, cursor: 'pointer', fontSize: 14 }}>
@@ -244,7 +246,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Name + info */}
+        {/* Identity Section */}
         <div style={{ background: '#fff', borderRadius: 20, padding: 16, border: '1.5px solid var(--border)', boxShadow: 'var(--shadow)', marginBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
             <h1 style={{ fontWeight: 800, fontSize: 20, color: 'var(--text)' }}>{name}</h1>
@@ -280,7 +282,7 @@ export default function Profile() {
             <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'left' }}>📞 {userData.phone}</div>
           )}
 
-          {/* Followers row */}
+          {/* Connection Stats */}
           <div style={{ display: 'flex', gap: 20, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
             {[
               { label: 'Followers', value: followerCount },
@@ -295,7 +297,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Stats — volunteers only */}
+        {/* Performance Metrics (Volunteers Only) */}
         {isVolunteer && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
             {[
@@ -311,7 +313,7 @@ export default function Profile() {
           </div>
         )}
 
-        {/* Level bar — volunteers only */}
+        {/* Progression Progress Bar */}
         {isVolunteer && (
           <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1.5px solid var(--border)', marginBottom: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -329,7 +331,7 @@ export default function Profile() {
           </div>
         )}
 
-        {/* Badges */}
+        {/* Achievement Gallery */}
         {profileData?.badges?.length > 0 && (
           <div style={{ background: '#fff', borderRadius: 16, padding: 16, border: '1.5px solid var(--border)', marginBottom: 14 }}>
             <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--text)', marginBottom: 12, textAlign: 'left' }}>Badges Earned</div>
@@ -350,7 +352,7 @@ export default function Profile() {
         )}
       </div>
 
-      {/* Posts tab */}
+      {/* Content Navigation */}
       <div style={{ background: '#fff', borderBottom: '1.5px solid var(--border)', display: 'flex', maxWidth: 600, margin: '0 auto' }}>
         {['posts', ...((isOwn) ? ['saved'] : [])].map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)} style={{ flex: 1, padding: '14px', border: 'none', background: 'none', color: activeTab === tab ? 'var(--primary)' : 'var(--muted)', fontWeight: 700, fontSize: 14, cursor: 'pointer', borderBottom: `3px solid ${activeTab === tab ? 'var(--primary)' : 'transparent'}`, textTransform: 'capitalize' }}>

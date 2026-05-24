@@ -1,52 +1,140 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { supabase } from "../api/supabaseClient";
-import Button from "../Components/ui/Button";
-import  {saveComplaintPDF}  from "../lib/pdfGenerator";
+import { saveComplaintPDF } from "../lib/pdfGenerator";
 import "./FileComplaint.css";
 import { handleOfficialSubmissionFlow } from "../lib/whatsappSender";
-import { 
-  MULTAN_ZONES, 
-  ISSUE_MAPPING, 
+import {
+  MULTAN_ZONES,
+  ISSUE_MAPPING,
   SEVERITY_LEVELS,
-  generateTrackingCode 
+  generateTrackingCode,
 } from "../lib/complaintData";
 
+function CustomSelect({
+  options,
+  value,
+  onChange,
+  placeholder = "Select...",
+  required = false,
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+
+  const selected = useMemo(
+    () => options.find((o) => o.value === value) || null,
+    [options, value]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocMouseDown = (e) => {
+      if (!rootRef.current) return;
+      if (!rootRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, [open]);
+
+  return (
+    <div
+      ref={rootRef}
+      className={`custom-select${required ? " custom-select--required" : ""}`}
+    >
+      <button
+        type="button"
+        className={`custom-select__trigger${open ? " is-open" : ""}`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setOpen(false);
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setOpen((o) => !o);
+          }
+        }}
+      >
+        <span
+          className={`custom-select__value${selected ? "" : " is-placeholder"}`}
+        >
+          {selected ? selected.label : placeholder}
+        </span>
+        <span className="custom-select__chev" aria-hidden>
+          ▾
+        </span>
+      </button>
+
+      {open && (
+        <div className="custom-select__menu" role="listbox">
+          {options.map((opt) => {
+            const isSelected = opt.value === value;
+            return (
+              <button
+                type="button"
+                key={opt.value}
+                className={`custom-select__option${isSelected ? " is-selected" : ""}`}
+                role="option"
+                aria-selected={isSelected}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {required && (
+        <input
+          type="hidden"
+          name="__required_custom_select"
+          value={value || ""}
+          readOnly
+          aria-hidden="true"
+        />
+      )}
+    </div>
+  );
+}
+
 export default function FileComplaint() {
-  const [form, setForm] = useState({ 
-    userName: "", 
-    email: "", 
-    category: "", 
-    location: "", 
-    severity: "Medium", 
-    text: "" 
+  const [form, setForm] = useState({
+    userName: "",
+    email: "",
+    category: "",
+    location: "",
+    severity: "Medium",
+    text: "",
   });
   const [file, setFile] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [trackingCode, setTrackingCode] = useState(null);
+
   const [loading, setLoading] = useState(false);
-  const [lastSubmission, setLastSubmission] = useState(null); // Stores full data for PDF/WA
+  const [lastSubmission, setLastSubmission] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (!file) return alert("Evidence is required.");
-
     setLoading(true);
+
     const code = generateTrackingCode();
-    const mapping = ISSUE_MAPPING[form.category] || { auth: "Admin", law: "General" };
+    const mapping =
+      ISSUE_MAPPING[form.category] || ({ auth: "Admin", law: "General" });
     const finalName = form.userName.trim() || "Anonymous";
 
     try {
-      // 1. Upload File
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${code}.${fileExt}`;
-      
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('evidence')
+        .from("evidence")
         .upload(fileName, file, { upsert: true });
-
       if (uploadError) throw uploadError;
 
-      // 2. Prepare Payload
       const complaintPayload = {
         tracking_code: code,
         complainant_name: finalName,
@@ -57,15 +145,14 @@ export default function FileComplaint() {
         complaint_text: form.text,
         evidence_url: uploadData.path,
         ppc_mapping: mapping.law,
-        assigned_authority: mapping.auth
+        assigned_authority: mapping.auth,
       };
 
-      // 3. Insert to DB
-      const { error: dbError } = await supabase.from("complaints").insert([complaintPayload]);
-
+      const { error: dbError } = await supabase
+        .from("complaints")
+        .insert([complaintPayload]);
       if (dbError) throw dbError;
 
-      // 4. Update state to enable Success UI and Action Buttons
       setLastSubmission(complaintPayload);
       setTrackingCode(code);
       setSubmitted(true);
@@ -76,106 +163,225 @@ export default function FileComplaint() {
     }
   }
 
-  // --- SUCCESS VIEW (Only shows after DB insertion) ---
-  if (submitted) return (
-    <div className="form-container">
-      <div className="success-card shadow">
-        <div className="success-icon">✓</div>
-        <h2>Complaint Registered!</h2>
-        <p className="tracking-text">
-          Tracking ID: <strong>{trackingCode}</strong>
-        </p>
-        
-        <div className="info-box">
-          <p>Your official complaint has been formatted. Please use the buttons below to download your report and notify the concerned department.</p>
+  if (submitted)
+    return (
+      <div className="file-complaint-page">
+        <div className="file-complaint-bg" />
+        <div className="form-container form-container-success">
+          <div className="success-card">
+            <div className="success-icon">✓</div>
+            <h2 className="success-heading">Complaint Registered!</h2>
+            <p className="tracking-text">
+              Tracking ID: <strong>{trackingCode}</strong>
+            </p>
+            <div className="info-box">
+              <p>
+                Your official complaint has been formatted. Use the buttons below
+                to download your report and notify the concerned department.
+              </p>
+            </div>
+            <div className="action-row">
+              <button
+                className="btn-download btn-action"
+                onClick={async () =>
+                  await saveComplaintPDF(
+                    lastSubmission,
+                    lastSubmission.assigned_authority,
+                    lastSubmission.ppc_mapping
+                  )
+                }
+              >
+                ⬇ Download PDF
+              </button>
+              <button
+                className="btn-wa btn-action"
+                onClick={() => handleOfficialSubmissionFlow(lastSubmission)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  focusable="false"
+                  style={{ width: 20, height: 20 }}
+                >
+                  <path
+                    fill="white"
+                    d="M12.04 2C6.49 2 2 6.47 2 12.01c0 1.88.52 3.64 1.42 5.15L2 22l4.99-1.4c1.48.84 3.2 1.32 5.05 1.32 5.55 0 10.04-4.49 10.04-10.05C22.08 6.47 17.59 2 12.04 2Zm5.78 13.43c-.2.6-1.17 1.16-1.62 1.22-.41.06-.93.09-1.5-.07-.35-.1-.8-.25-1.36-.53-2.52-1.2-4.16-3.86-4.26-4.03-.1-.17-1.01-1.32-1.01-2.52 0-1.2.62-1.78.84-2.02.23-.23.5-.31.66-.31h.36c.12 0 .29-.04.44.33.18.42.59 1.4.64 1.5.06.1.1.24.02.41-.08.17-.12.28-.24.42-.12.14-.26.31-.36.42-.12.12-.24.25-.11.47.13.22.57.95 1.23 1.53.85.75 1.57.99 1.81 1.1.22.1.36.08.49-.07.16-.18.6-.7.76-.94.16-.23.31-.2.52-.12.21.08 1.33.62 1.56.74.23.12.38.18.44.28.06.1.06.6-.14 1.2Z"
+                  />
+                </svg>
+                WhatsApp
+              </button>
+            </div>
+            <button
+              className="btn-reset"
+              onClick={() => window.location.reload()}
+            >
+              File Another Complaint
+            </button>
+          </div>
         </div>
+      </div>
+    );
 
-<div className="action-row" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-  {/* Option 1: Just Download */}
-  <Button 
-    className="btn-download" 
-    onClick={async () => await saveComplaintPDF(lastSubmission, lastSubmission.assigned_authority, lastSubmission.ppc_mapping)}
-  >
-    Download PDF
-  </Button>
+  return (
+    <div className="file-complaint-page">
+      <div className="file-complaint-bg" />
+      <div className="form-container">
+        <h1 className="complaint-page-heading">Register a Complaint</h1>
+        <p className="complaint-page-sub">
+          Your voice matters — file your complaint and hold authorities
+          accountable.
+        </p>
 
-  {/* Option 2: Just WhatsApp */}
-<Button 
-            className="btn-wa" 
-            style={{ width: '100%', backgroundColor: '#25D366', color: 'white', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-            onClick={() => handleOfficialSubmissionFlow(lastSubmission)}
+        <form onSubmit={handleSubmit} className="complaint-form">
+          {/* Section 1: Your Information */}
+          <div>
+            <div className="form-section-heading">
+              <span
+                className="section-icon purple"
+                style={{ color: "white" }}
+              >
+                👤
+              </span>
+              Your Information
+            </div>
+            <div className="form-row">
+              <div>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your name (optional)"
+                  onChange={(e) =>
+                    setForm({ ...form, userName: e.target.value })
+                  }
+                />
+                <small
+                  style={{
+                    color: "#6b7280",
+                    fontSize: "0.85rem",
+                    marginTop: "0.3rem",
+                    display: "block",
+                  }}
+                >
+                  Anonymous if not provided
+                </small>
+              </div>
+              <div>
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="Email (Optional)"
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Incident Details */}
+          <div>
+            <div className="form-section-heading">
+              <span
+                className="section-icon pink"
+                style={{ color: "white" }}
+              >
+                📍
+              </span>
+              Incident Details
+            </div>
+            <div className="form-row">
+              <div>
+                <label>Location</label>
+                <CustomSelect
+                  required
+                  placeholder="Where did it happen?"
+                  options={MULTAN_ZONES.map((z) => ({ value: z, label: z }))}
+                  value={form.location}
+                  onChange={(v) => setForm({ ...form, location: v })}
+                />
+              </div>
+              <div>
+                <label>Issue Category</label>
+                <CustomSelect
+                  required
+                  placeholder="What is the issue?"
+                  options={Object.keys(ISSUE_MAPPING).map((cat) => ({
+                    value: cat,
+                    label: cat,
+                  }))}
+                  value={form.category}
+                  onChange={(v) => setForm({ ...form, category: v })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Severity + Description */}
+          <div>
+            <div className="form-section-heading">
+              <span
+                className="section-icon teal"
+                style={{ color: "white" }}
+              >
+                ⚡
+              </span>
+              Complaint Details
+            </div>
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label>Severity Level</label>
+              <CustomSelect
+                options={SEVERITY_LEVELS.map((s) => ({
+                  value: s,
+                  label: `${s} Severity`,
+                }))}
+                value={form.severity}
+                onChange={(v) => setForm({ ...form, severity: v })}
+              />
+            </div>
+            <div>
+              <label>Detailed Description</label>
+              <textarea
+                placeholder="Describe the incident in detail. Be specific about dates, times, and people involved..."
+                required
+                onChange={(e) => setForm({ ...form, text: e.target.value })}
+              />
+            </div>
+          </div>
+
+          {/* Section 4: Evidence */}
+          <div>
+            <div className="form-section-heading">
+              <span
+                className="section-icon orange"
+                style={{ color: "white" }}
+              >
+                📎
+              </span>
+              Upload Evidence
+            </div>
+            <div className="evidence-box">
+              <label>📸 Attach Evidence (Required)</label>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                required
+                onChange={(e) => setFile(e.target.files[0])}
+                className="file-input"
+              />
+              <small>
+                Supported formats: Images (JPG, PNG) and PDF documents
+              </small>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-submit-complaint"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m3.732-5.508A9.63 9.63 0 0 0 12 2.25c-5.25 0-9.5 4.25-9.5 9.5 0 1.689.444 3.297 1.232 4.708L2.25 21.75l7.27-1.91a9.47 9.47 0 0 0 4.518 1.147c5.25 0 9.5-4.25 9.5-9.5 0-2.54-1.01-4.91-2.672-6.687"/>
-            </svg>
-            Notify Authority via WhatsApp
-          </Button>
-
-</div>
-
-        <button className="btn-reset" onClick={() => window.location.reload()}>
-          File Another Complaint
-        </button>
+            {loading ? "⏳ Processing..." : "🚀 Submit Complaint"}
+          </button>
+        </form>
       </div>
     </div>
   );
-
-  // --- FORM VIEW ---
-  return (
-    <div className="form-container">
-      <form onSubmit={handleSubmit} className="complaint-form">
-        <div className="form-group">
-          <label>Your Information</label>
-          <div className="form-row">
-            <div style={{flex: 1}}>
-              <input type="text" placeholder="Name" onChange={e => setForm({...form, userName: e.target.value})} />
-              <small style={{color: '#6b7280', fontSize: '0.85rem', marginTop: '0.25rem'}}>Optional - Anonymous if not provided</small>
-            </div>
-            <input type="email" placeholder="Email (Optional)" onChange={e => setForm({...form, email: e.target.value})} />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Incident Details</label>
-          <div className="form-row">
-            <select required onChange={e => setForm({...form, location: e.target.value})}>
-              <option value="">Where did it happen?</option>
-              {MULTAN_ZONES.map(z => <option key={z} value={z}>{z}</option>)}
-            </select>
-
-            <select required onChange={e => setForm({...form, category: e.target.value})}>
-              <option value="">What is the issue?</option>
-              {Object.keys(ISSUE_MAPPING).map(cat => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div className="form-group">
-          <label>Severity Level</label>
-          <select value={form.severity} onChange={e => setForm({...form, severity: e.target.value})}>
-            {SEVERITY_LEVELS.map(s => <option key={s} value={s}>{s} Severity</option>)}
-          </select>
-          
-          <label style={{marginTop: '10px'}}>Detailed Description</label>
-          <textarea placeholder="Describe details..." required onChange={e => setForm({...form, text: e.target.value})} />
-        </div>
-
-        <div className="form-group evidence-box">
-          <label><strong>Upload Evidence (Required)</strong></label>
-          <input 
-            type="file" 
-            accept="image/*,.pdf" 
-            required 
-            onChange={e => setFile(e.target.files[0])} 
-            className="file-input"
-          />
-          <small>Supported formats: Images and PDFs</small>
-        </div>
-
-        <Button type="submit" disabled={loading} style={{width: '100%'}}>
-          {loading ? "Processing..." : "Submit Complaint"}
-        </Button>
-      </form>
-    </div>
-  );
 }
+

@@ -1,160 +1,219 @@
-/* ═══════════════════════════════════════
-   TRACK COMPLAINT PAGE
-═══════════════════════════════════════ */
+/* Tracking Search */
 
-.track-container {
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 1rem 0 3rem;
-}
-
-.track-page-title {
-  font-size: clamp(2.5rem, 5vw, 3.8rem);
-  font-weight: 900;
-  background: linear-gradient(135deg, #009688, #0288d1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.6rem;
-}
-.track-page-sub { color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1.3rem; font-weight: 500; }
-
-/* ── Search Card ── */
-.track-card {
-  background: #ffffff;
-  border: 2.5px solid #0288d1;
+/* Full viewport centered layout */
+.track-page-wrapper {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background: linear-gradient(135deg, #f5f0ff 0%, #e8f5ff 50%, #f0fff8 100%);
   border-radius: 2rem;
-  padding: 3rem 3.25rem;
-  box-shadow: 0 6px 16px rgba(2,136,209,0.15);
-  margin-bottom: 3rem;
-  backdrop-filter: none;
 }
-.track-card h2 { font-size: 1.6rem; margin-bottom: 1.75rem; color: #0288d1; font-weight: 900; }
 
-.search-bar {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 0;
-  flex-wrap: wrap;
-}
-.search-bar input { flex: 1; min-width: 240px; }
-.search-bar .btn {
-  background: linear-gradient(135deg, var(--mint-deep), var(--sky-deep));
-  color: white;
+/* Heading centered */
+.track-page-heading {
+  font-family: Arial, sans-serif !important;
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
   font-weight: 900;
-  white-space: nowrap;
-  box-shadow: 0 6px 22px rgba(31,168,106,0.3);
-  padding: 1rem 1.85rem;
-  font-size: 1.05rem;
+  color: #3b0764 !important;
+  -webkit-text-fill-color: #3b0764 !important;
+  text-align: center;
+  margin-bottom: 0.5rem;
 }
-.search-bar .btn:hover {
-  background: linear-gradient(135deg, #158050, #1060a8);
-  transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(31,168,106,0.4);
-}
-
-/* ── Result Card ── */
-.result-card {
-  background: rgba(255,255,255,0.92);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  backdrop-filter: blur(10px);
+.track-page-sub {
+  color: #6b7280;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-.result-header {
-  padding: 1.75rem 2.25rem;
-  background: linear-gradient(135deg, rgba(168,237,207,0.18), rgba(147,208,247,0.15));
-  border-bottom: 1.5px solid var(--border);
+/* Search box — centered, big */
+.track-search-zone {
+  width: 100%;
+  max-width: 700px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
   gap: 1rem;
-}
-.result-header h3 { font-size: 1.35rem; color: var(--text-primary); margin: 0; }
-.tracking-code-badge {
-  font-family: 'Nunito', monospace;
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--lavender-deep);
-  background: var(--lavender);
-  border: 1px solid var(--lavender-mid);
-  border-radius: 999px;
-  padding: 0.45rem 1.1rem;
-}
-
-/* ── Progress section ── */
-.progress-section {
-  padding: 2rem 2.25rem;
-  border-bottom: 1.5px solid var(--border);
-}
-.progress-label {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
+  background: #fafbff;
+  border: 3px solid #7c3aed;
+  border-radius: 2rem;
+  padding: 0.75rem 0.75rem 0.75rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(124,58,237,0.18);
 }
-.progress-label span { font-size: 0.9rem; font-weight: 700; color: var(--text-secondary); }
-.progress-label strong { font-size: 0.9rem; font-weight: 900; color: var(--mint-deep); }
+.track-search-zone input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: Arial, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a0a2e;
+  background: transparent;
+  min-width: 0;
+}
+.track-search-zone input::placeholder { color: #c4b5fd; font-weight: 500; }
+.track-search-btn {
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 1rem 2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .25s ease;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+}
+.track-search-btn:hover {
+  background: #0ea5e9;
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(124,58,237,0.45);
+}
 
-/* Stage pills */
-.stages-row {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-top: 1.25rem;
+/* Result card */
+.track-result-card {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 2.5rem;
+  background: #fafbff;
+  border-radius: 2rem;
+  border: 2.5px solid #c4b5fd;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  overflow: hidden;
+  animation: slideUp .4s ease;
 }
-.stage-pill {
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.track-result-header {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #7c3aed, #5e35b1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.track-result-header h3 {
+  font-family: Arial, sans-serif;
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin: 0;
+  color: white;
+}
+.tracking-code-badge {
+  font-family: Arial, monospace;
   font-size: 0.92rem;
   font-weight: 800;
-  padding: 0.45rem 0.95rem;
+  letter-spacing: 0.1em;
+  color: #7c3aed;
+  background: #fafbff;
   border-radius: 999px;
-  border: 1.5px solid var(--border);
-  color: var(--text-muted);
-  background: rgba(255,255,255,0.8);
-  transition: all .2s;
+  padding: 0.4rem 1rem;
 }
-.stage-pill.done   { background: var(--mint); color: var(--mint-deep); border-color: var(--mint-mid); }
-.stage-pill.active { background: var(--lavender-deep); color: white; border-color: var(--lavender-deep); box-shadow: 0 3px 12px rgba(124,58,237,0.28); }
 
-/* ── Details grid ── */
-.complaint-details {
-  padding: 1.75rem 2.25rem;
+.track-result-body { padding: 1.75rem 2rem; }
+
+.track-detail-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  margin-bottom: 1.5rem;
 }
-.detail-item label {
-  font-size: 0.95rem;
+.track-detail-item label {
+  font-family: Arial, sans-serif;
+  font-size: 0.82rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--text-muted);
+  color: #9ca3af;
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
-.detail-item p {
-  font-size: 1.2rem;
+.track-detail-item p {
+  font-family: Arial, sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1a0a2e;
   margin: 0;
 }
 
-/* ── Action row ── */
-.track-actions {
-  padding: 1.5rem 2.25rem;
-  border-top: 1.5px solid var(--border);
+/* Progress bar */
+.track-progress-wrap { margin: 1.5rem 0; }
+.track-progress-label {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  font-family: Arial, sans-serif;
+}
+.track-progress-label span { font-size: 0.9rem; font-weight: 700; color: #6b7280; }
+.track-progress-label strong { font-size: 0.9rem; font-weight: 900; color: #009688; }
+.track-progress-bar {
+  height: 10px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.track-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
+  transition: width 1s ease;
 }
 
+/* Stage pills */
+.track-stages { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+.stage-pill {
+  font-family: Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  color: #9ca3af;
+  background: #f9fafb;
+  transition: all .2s;
+}
+.stage-pill.done   { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.stage-pill.active { background: #7c3aed; color: white; border-color: #7c3aed; box-shadow: 0 3px 12px rgba(124,58,237,0.3); }
+
+/* Resolve button */
+.btn-resolve {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  padding: 0.9rem 1.75rem;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all .25s ease;
+  box-shadow: 0 4px 14px rgba(16,185,129,0.3);
+}
+.btn-resolve:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(16,185,129,0.4); }
+
+/* Legacy compatibility */
+.card h2 {
+  font-family: Arial, sans-serif !important;
+  color: #3b0764 !important;
+  -webkit-text-fill-color: #3b0764 !important;
+}
+.complaint-details { padding: 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 1.05rem; }
+.complaint-details strong { color: #3b0764; }
+.track-search-center { display: flex; align-items: center; justify-content: center; min-height: 200px; }
+
 @media (max-width: 640px) {
-  .search-bar { flex-direction: column; }
-  .track-card { padding: 1.75rem 1.5rem; }
-  .result-header { flex-direction: column; align-items: flex-start; }
+  .track-search-zone { flex-direction: column; padding: 1rem; border-radius: 1.5rem; }
+  .track-search-btn { width: 100%; }
+  .track-detail-grid { grid-template-columns: 1fr; }
 }

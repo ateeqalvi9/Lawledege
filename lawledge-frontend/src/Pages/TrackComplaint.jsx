@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "../api/supabaseClient";
 import emailjs from '@emailjs/browser';
-import Input from "../Components/ui/Input.jsx";
-import Button from "../Components/ui/Button.jsx";
 import "./TrackComplaint.css";
-import Progress from "../Components/ui/Progress.jsx";
-import Alert from "../Components/ui/Alert.jsx";
 import Toast from "../Components/ui/Toast.jsx";
 
 export default function TrackComplaint() {
@@ -17,110 +13,116 @@ export default function TrackComplaint() {
 
   useEffect(() => {
     const code = searchParams.get("code");
-    if (code) {
-      setTrackingCode(code);
-      handleSearch(code);
-    }
+    if (code) { setTrackingCode(code); handleSearch(code); }
   }, [searchParams]);
 
   async function handleSearch(codeValue) {
     const code = codeValue ?? trackingCode;
-    if (!code.trim()) {
-      setToast({ type: "error", message: "Please enter a tracking code" });
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from("complaints")
-      .select("*")
-      .eq("tracking_code", code);
-
-    if (error) {
-      console.error("Search error:", error);
-      setToast({ type: "error", message: "Error searching complaints" });
-      setComplaint(null);
-    } else if (data && data.length > 0) {
-      setComplaint(data[0]);
-      setToast({ type: "success", message: "Complaint found" });
-    } else {
-      setToast({ type: "error", message: "Complaint not found. Check your tracking code." });
-      setComplaint(null);
-    }
+    if (!code.trim()) { setToast({ type: "error", message: "Please enter a tracking code" }); return; }
+    const { data, error } = await supabase.from("complaints").select("*").eq("tracking_code", code);
+    if (error) { setToast({ type: "error", message: "Error searching complaints" }); setComplaint(null); }
+    else if (data && data.length > 0) { setComplaint(data[0]); setToast({ type: "success", message: "Complaint found!" }); }
+    else { setToast({ type: "error", message: "Complaint not found. Check your tracking code." }); setComplaint(null); }
   }
 
-  const stages = ["Pending", "Approved", "Questions", "PDF Generated", "Sent", "Resolved"];
-
+  const stages = ["Pending", "Approved", "Sent", "Resolved"];
   function getProgressValue(status) {
     const index = stages.indexOf(status);
     return index >= 0 ? (index / (stages.length - 1)) * 100 : 0;
   }
+  function getStageClass(stage, currentStatus) {
+    const currentIdx = stages.indexOf(currentStatus);
+    const stageIdx = stages.indexOf(stage);
+    if (stageIdx < currentIdx) return "done";
+    if (stageIdx === currentIdx) return "active";
+    return "";
+  }
 
   async function handleMarkResolved() {
     if (!complaint || !complaint.id) return;
-
     try {
-      const { error } = await supabase
-        .from("complaints")
-      .update({ status: "resolved" })
-        .eq("id", complaint.id);
-
+      const { error } = await supabase.from("complaints").update({ status: "resolved" }).eq("id", complaint.id);
       if (error) throw error;
-
       setComplaint({ ...complaint, status: "resolved" });
       setToast({ type: "success", message: "Status updated to Resolved." });
-
-      if (complaint.complainant_email) {
-        try {
-          await emailjs.send(
-            'your_emailjs_service_id',
-            'your_emailjs_template_id',
-            {
-              to_email: complaint.complainant_email,
-              from_name: 'Lawledge Portal',
-              to_name: complaint.complainant_name || 'Complainant',
-              subject: `Complaint Resolved - Tracking ID: ${complaint.tracking_code}`,
-              message: `Dear ${complaint.complainant_name || 'Valued User'},\n\nWe are pleased to inform you that your complaint (Tracking ID: ${complaint.tracking_code}) has been marked as RESOLVED by the concerned department.\n\nCategory: ${complaint.category}\nResolution Status: Completed\n\nThank you for bringing this matter to our attention. If you have any further concerns, please feel free to file a new complaint.\n\nBest regards,\nLawledge Portal Team`
-            },
-            'your_emailjs_user_id'
-          );
-        } catch (emailError) {
-          console.warn('Email notification failed:', emailError);
-        }
-      }
     } catch (error) {
-      console.error('Failed to mark as resolved:', error);
       setToast({ type: "error", message: "Failed to update status." });
     }
   }
 
   return (
-    <div className="card">
-      <h2>Track Complaint</h2>
-      <div className="search-bar">
-        <Input
-          placeholder="Enter Tracking Code"
+    <div className="track-page-wrapper">
+      <h1 className="track-page-heading">🔍 Track Your Complaint</h1>
+      <p className="track-page-sub">Enter your reference code to see the current status of your complaint.</p>
+
+      {/* Big centered search box */}
+      <div className="track-search-zone">
+        <input
+          type="text"
+          placeholder="Enter Reference Code (e.g. CMP-XXXXXXXX)"
           value={trackingCode}
           onChange={e => setTrackingCode(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSearch(trackingCode)}
         />
-        <Button onClick={() => handleSearch(trackingCode)}>Search</Button>
+        <button className="track-search-btn" onClick={() => handleSearch(trackingCode)}>Search</button>
       </div>
 
+      {/* Result */}
       {complaint && (
-        <div className="complaint-details">
-          <p><strong>Complaint:</strong> {complaint.complaint_text}</p>
-          <p><strong>Status:</strong> {complaint.status}</p>
-          <Progress value={getProgressValue(complaint.status)} />
-          <Alert type="info" message={`Complaint is currently ${complaint.status}`} />
-          {complaint.status === "approved" && (
-            <div style={{marginTop: '1.5rem'}}>
-              <Button onClick={handleMarkResolved} style={{backgroundColor: '#10b981', color: 'white'}}>
-                Mark as Resolved (Department Action)
-              </Button>
-              <small style={{display: 'block', marginTop: '0.5rem', color: '#6b7280'}}>
-                Click this button once the department has resolved your complaint.
-              </small>
+        <div className="track-result-card">
+          <div className="track-result-header">
+            <h3>Complaint Details</h3>
+            <span className="tracking-code-badge">{complaint.tracking_code}</span>
+          </div>
+          <div className="track-result-body">
+            <div className="track-detail-grid">
+              <div className="track-detail-item">
+                <label>Complainant</label>
+                <p>{complaint.complainant_name || "Anonymous"}</p>
+              </div>
+              <div className="track-detail-item">
+                <label>Category</label>
+                <p>{complaint.category || "—"}</p>
+              </div>
+              <div className="track-detail-item">
+                <label>Location</label>
+                <p>{complaint.location || "—"}</p>
+              </div>
+              <div className="track-detail-item">
+                <label>Severity</label>
+                <p>{complaint.severity || "Medium"}</p>
+              </div>
+              <div className="track-detail-item" style={{gridColumn:'1/-1'}}>
+                <label>Description</label>
+                <p style={{fontSize:'1rem', fontWeight:600, color:'#4b5563'}}>{complaint.complaint_text}</p>
+              </div>
             </div>
-          )}
+
+            {/* Progress */}
+            <div className="track-progress-wrap">
+              <div className="track-progress-label">
+                <span>Progress</span>
+                <strong>{complaint.status || "Pending"}</strong>
+              </div>
+              <div className="track-progress-bar">
+                <div className="track-progress-fill" style={{ width: `${getProgressValue(complaint.status)}%` }} />
+              </div>
+              <div className="track-stages">
+                {stages.map(stage => (
+                  <span key={stage} className={`stage-pill ${getStageClass(stage, complaint.status)}`}>{stage}</span>
+                ))}
+              </div>
+            </div>
+
+            {complaint.status === "approved" && (
+              <div>
+                <button className="btn-resolve" onClick={handleMarkResolved}>✓ Mark as Resolved</button>
+                <small style={{ display:'block', marginTop:'0.5rem', color:'#9ca3af', fontFamily:'Arial' }}>
+                  Click when the department has resolved your complaint.
+                </small>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

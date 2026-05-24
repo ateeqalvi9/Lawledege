@@ -47,7 +47,7 @@ export default function ReviewModal({ complaint, onClose, onApprove, onPurge, on
           </div>
         </div>
 
-        <div className="modal-footer flex gap-2 justify-end">
+        <div className="modal-footer">
           <Button onClick={onClose} variant="outline">Close</Button>
           {/* Button to approve the complaint */}
           <Button onClick={() => onApprove(complaint.id)} variant="primary">
