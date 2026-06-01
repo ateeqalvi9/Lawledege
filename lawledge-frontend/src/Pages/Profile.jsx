@@ -240,7 +240,28 @@ export default function Profile() {
           </div>
           <div style={{ display: 'flex', gap: 8, paddingBottom: 4 }}>
             {isOwn ? (
-              <button onClick={() => setEditing(true)} style={{ background: 'linear-gradient(135deg,#7b2ff7,#ff0080)', color: '#fff', border: 'none', borderRadius: 12, padding: '10px 20px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins,sans-serif', fontSize: 14 }}>Edit Profile</button>
+              <>
+                {isVol ? (
+                  <button
+                    onClick={() => navigate('/volunteer-hub')}
+                    style={{
+                      background: 'var(--primary-light)',
+                      color: 'var(--primary)',
+                      border: 'none',
+                      borderRadius: 12,
+                      padding: '10px 16px',
+                      fontWeight: 900,
+                      cursor: 'pointer',
+                      fontFamily: 'Poppins,sans-serif',
+                      fontSize: 13,
+                      marginRight: 8,
+                    }}
+                  >
+                    Volunteer Hub
+                  </button>
+                ) : null}
+                <button onClick={() => setEditing(true)} style={{ background: 'linear-gradient(135deg,#7b2ff7,#ff0080)', color: '#fff', border: 'none', borderRadius: 12, padding: '10px 20px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins,sans-serif', fontSize: 14 }}>Edit Profile</button>
+              </>
             ) : user ? (
               <>
                 <button onClick={toggleFollow} style={{ background: isFollowing ? 'transparent' : 'linear-gradient(135deg,#7b2ff7,#ff0080)', color: isFollowing ? 'var(--primary)' : '#fff', border: isFollowing ? '2px solid var(--primary)' : 'none', borderRadius: 12, padding: '10px 18px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Poppins,sans-serif', fontSize: 13 }}>

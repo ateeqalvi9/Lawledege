@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { 
   BookOpen, ShieldAlert, Phone, Bot, Eye, EyeOff, 
   Rss, User, ShieldCheck, Film, Compass, MessageSquare,
-  Search, Trophy, Award, Shield
+  Search, Trophy, Award, Shield, Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,6 +29,9 @@ import HelpRequests from "./Pages/HelpRequests";
 import AuthorityLeaderboard from "./Components/AuthorityLeaderboard";
 import VolunteerLeaderboard from "./Components/VolunteerLeaderboard";
 import Explore from "./Pages/Explore";
+import VolunteerHub from "./Pages/VolunteerHub";
+
+
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Messages from "./Pages/Messages";
@@ -49,21 +52,18 @@ import "./App.css";
 
 // Standardized Side Navigation Target Configuration Array
 const SIDEBAR_LINKS = [
-  { to: "/",                         label: "Home Tools",         icon: <Bot size={18} /> },
-  { to: "/complaints",               label: "File Complaint",     icon: <ShieldCheck size={18} /> },
-  { to: "/approved-complaints",      label: "Complaints Portal",  icon: <BookOpen size={18} /> },
-  { to: "/track",                    label: "Track Complaint",    icon: <Search size={18} /> },
-  { to: "/leaderboard",              label: "Authority Board",    icon: <Trophy size={18} /> },
-  { to: "/admin",                    label: "Platform Admin",     icon: <Shield size={18} /> },
-  { to: "/profile",                  label: "My Profile",         icon: <User size={18} /> },
-  { to: "/help",                     label: "Help Line Hub",      icon: <ShieldAlert size={18} /> },
-  { to: "/feed",                     label: "Justice Feed",       icon: <Rss size={18} /> },
-  { to: "/explore",                  label: "Explore Network",    icon: <Compass size={18} /> },
-  { to: "/reels",                    label: "Legal Reels",        icon: <Film size={18} /> },
-  { to: "/messages",                 label: "Inbox Chat",         icon: <MessageSquare size={18} /> },
-  { to: "/volunteer-rewards",        label: "Volunteer Rewards",  icon: <Award size={18} /> },
-  { to: "/volunteer-admin",          label: "Volunteer Admin",    icon: <ShieldAlert size={18} /> },
-];
+  { to: "/", label: "Home Tools", icon: <Bot size={18} /> },
+  { to: "/complaints", label: "File Complaint", icon: <ShieldCheck size={18} /> },
+  { to: "/approved-complaints", label: "Complaints Portal", icon: <BookOpen size={18} /> },
+  { to: "/track", label: "Track Complaint", icon: <Search size={18} /> },
+  { to: "/leaderboard", label: "Authority Board", icon: <Trophy size={18} /> },
+  { to: "/admin", label: "Platform Admin", icon: <Shield size={18} /> },
+  { to: "/profile", label: "My Profile", icon: <User size={18} /> },
+  // Legal tools kept as top-level (non-social)
+  { to: "/help", label: "Help Line Hub", icon: <ShieldAlert size={18} /> },
+
+
+];c
 
 function NavButton({ active, onClick, icon, label, isAI, highViz }) {
   const activeStyles = highViz 
@@ -93,39 +93,37 @@ function AppLayout() {
     <div className={`app-container ${highVisibility ? 'high-viz' : ''}`}>
       
       {/* ── Fixed Sidebar Navigation System ── */}
-      (
-        <nav className="navbar">
-          <div className="nav-logo">
-            <h2>Lawledge</h2>
-            <span>Legal Portal</span>
-          </div>
-          
-          <div className="nav-links-wrapper">
-            {SIDEBAR_LINKS.map(link => (
-              <Link 
-                key={link.to} 
-                to={link.to} 
-                className={pathname === link.to ? "active" : ""}
-              >
-                <span className="link-icon-align">{link.icon}</span>
-                <span className="link-label-align">{link.label}</span>
-              </Link>
-            ))}
-          </div>
+      <nav className="navbar">
+        <div className="nav-logo">
+          <h2>Lawledge</h2>
+          <span>Legal Portal</span>
+        </div>
+        
+        <div className="nav-links-wrapper">
+          {SIDEBAR_LINKS.map(link => (
+            <Link 
+              key={link.to} 
+              to={link.to} 
+              className={pathname === link.to ? "active" : ""}
+            >
+              <span className="link-icon-align">{link.icon}</span>
+              <span className="link-label-align">{link.label}</span>
+            </Link>
+          ))}
+        </div>
 
-          <button 
-            onClick={() => setHighVisibility(!highVisibility)}
-            className="lg:mt-auto flex items-center justify-center gap-2 p-3 rounded-xl transition-all border-2 font-black uppercase text-[11px] w-full"
-            style={highVisibility 
-              ? { background: '#facc15', color: '#000', borderColor: '#000' } 
-              : { background: '#f1f5f9', color: '#475569', borderColor: 'transparent' }
-            }
-          >
-            {highVisibility ? <EyeOff size={16} /> : <Eye size={16} />}
-            <span>Contrast Mode</span>
-          </button>
-        </nav>
-      )
+        <button 
+          onClick={() => setHighVisibility(!highVisibility)}
+          className="lg:mt-auto flex items-center justify-center gap-2 p-3 rounded-xl transition-all border-2 font-black uppercase text-[11px] w-full"
+          style={highVisibility 
+            ? { background: '#facc15', color: '#000', borderColor: '#000' } 
+            : { background: '#f1f5f9', color: '#475569', borderColor: 'transparent' }
+          }
+        >
+          {highVisibility ? <EyeOff size={16} /> : <Eye size={16} />}
+          <span>Contrast Mode</span>
+        </button>
+      </nav>
 
       {/* ── Main Scroll Viewport Display ── */}
       <div className="main-wrapper">
@@ -150,17 +148,25 @@ function AppLayout() {
             } />
 
             {/* Volunteer Social Sub-System Tracks */}
+            <Route path="/volunteer-hub" element={user ? <VolunteerHub /> : <Navigate to="/login" replace />} />
+
             <Route path="/feed" element={<Feed />} />
             <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" replace />} />
             <Route path="/profile/:userId" element={<Profile />} />
             <Route path="/reels" element={<Reels />} />
-            <Route path="/help" element={<HelpRequests />} />
+            <Route path="/help" element={user ? <HelpRequests /> : <Navigate to="/login" replace />} />
             <Route path="/leaderboard" element={<AuthorityLeaderboard />} />
-            <Route path="/volunteer-rewards" element={<VolunteerLeaderboard />} />
-            <Route path="/explore" element={<Explore />} />
+
+            <Route path="/volunteer-rewards" element={user ? <VolunteerLeaderboard /> : <Navigate to="/login" replace />} />
+
+
+            <Route path="/explore" element={user ? <Explore /> : <Navigate to="/login" replace />} />
+
             <Route path="/messages" element={user ? <Messages /> : <Navigate to="/login" replace />} />
             <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" replace />} />
             <Route path="/create" element={user ? <CreatePost /> : <Navigate to="/login" replace />} />
+
+
             
             {/* Integrated Dual-Factor Secure Administration Control Center Routes */}
             <Route path="/admin" element={<AdminDashboard />} />

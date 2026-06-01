@@ -4,9 +4,12 @@
   min-height: 100vh;
 }
 
-.content:has(.file-complaint-page) {
-  max-width: 1700px !important;
+.file-complaint-page {
+  max-width: 1700px;
+  margin: 0 auto;
 }
+
+
 
 /* Background Layer */
 .file-complaint-bg {
@@ -194,7 +197,6 @@
   position: relative;
   width: 100%;
 }
-
 .custom-select__trigger {
   width: 100%;
   display: flex;

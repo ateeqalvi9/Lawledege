@@ -160,9 +160,11 @@ export default function Login() {
           {loading ? 'Signing in…' : 'Sign In'}
         </button>
 
+        {/* Keep this button on the Login page only; it does NOT replace the /login route */}
         <button className="btn-outline" onClick={() => navigate('/feed')} style={{ marginBottom: 28 }}>
           Browse as Guest (Read Only)
         </button>
+
 
         <p style={{ textAlign: 'center', fontSize: 14, color: 'var(--muted)' }}>
           New volunteer?{' '}
