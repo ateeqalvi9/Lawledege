@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { supabase } from '../api/supabaseClient';
 import { AuthContext } from './contextInstances.js'; 
 
@@ -69,3 +69,12 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
+// Custom hook to satisfy the volunteer module component tracking imports
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
