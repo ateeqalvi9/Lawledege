@@ -1,241 +1,85 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;900&family=Inter:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
-:root {
-  /* Rainbow Palette */
-  --rose: #ffd6e7;
-  --rose-mid: #ff6ba3;
-  --rose-deep: #e91e63;
-  --peach: #ffd4a3;
-  --peach-mid: #ff9d3d;
-  --peach-deep: #ff6b35;
-  --lemon: #ffff80;
-  --lemon-mid: #ffed4e;
-  --lemon-deep: #fbc02d;
-  --mint: #80f7d0;
-  --mint-mid: #26c6a0;
-  --mint-deep: #009688;
-  --sky: #80d8ff;
-  --sky-mid: #01b0f0;
-  --sky-deep: #0288d1;
-  --lavender: #d1c4ff;
-  --lavender-mid: #b39ddb;
-  --lavender-deep: #5e35b1;
-  --lilac: #f0bbff;
-  --lilac-mid: #d946ef;
-  --lilac-deep: #a855f7;
+/* =========================
+   BASE RESET
+========================= */
 
-  --high-viz-yellow: #facc15;
-  --font-sans: Arial, sans-serif;
-  --dark-mustard: #7A5A1F;
-
-  --radius-lg: 1.5rem;
+html, body, #root {
+  height: 100%;
+  width: 100%;
 }
 
-/* Base Resets */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* REMOVE DEFAULT LINK STYLING */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* =========================
+   THEME VARIABLES (DEFAULT = LIGHT)
+========================= */
+
+:root {
+  --bg: #f8fafc;
+  --text: #0f172a;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --muted: #64748b;
+  --primary: #7b2ff7;
+}
+
+/* DARK MODE */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --text: #e2e8f0;
+  --card: #111827;
+  --border: #1f2937;
+  --muted: #94a3b8;
+  --primary: #a855f7;
+}
+
+/* =========================
+   GLOBAL BODY (ONLY ONCE)
+========================= */
+
+body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+
+  background: var(--bg);
+  color: var(--text);
+
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  background-color: #f3ecff; /* light purple tint */
-  font-family: var(--font-sans);
-  color: #212121;
-  font-size: 21px; /* improve readability sitewide */
+/* =========================
+   SHARED UI COMPONENTS
+========================= */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  transition: background 0.25s ease, border 0.25s ease;
 }
 
-
-/* Layout Defaults */
-.app-container {
-  display: flex !important;
-  flex-direction: column !important;
-  /* Stacked vertically on mobile/tablet */
-  min-height: 100vh !important;
-  width: 100% !important;
+/* OPTIONAL: nicer scroll */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.navbar {
-  width: 100% !important;
-  height: auto !important;
-  background: #ffffff;
-  border-bottom: 2px solid #5e35b1;
-  padding: 1.25rem !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 1rem;
-  z-index: 100;
-}
-
-.nav-links-wrapper {
-  display: flex !important;
-  flex-direction: row !important;
-  /* Horizontally scrollable links on mobile */
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  white-space: nowrap;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Hide scrollbars for layout navigation tracks */
-.nav-links-wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.main-wrapper {
-  flex: 1 !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  background: linear-gradient(160deg, #f5f3ff 0%, #f0f9ff 45%, #f0fdf4 100%);
-  background-attachment: fixed;
-}
-
-.content {
-  padding: 24px 16px 140px 16px !important;
-  /* Snug styling on small screens */
-  width: 100% !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
-}
-
-/* Desktop Overrides */
-@media (min-width: 1024px) {
-
-  html,
-  body {
-    overflow: hidden;
-  }
-
-  /* Lock screen scrolling to let containers run cleanly */
-
-  .app-container {
-    flex-direction: row !important;
-    /* Side-by-side design structural shift */
-    height: 100vh !important;
-  }
-
-  .navbar {
-    width: 426px !important;
-    height: 100vh !important;
-    border-right: 2px solid #5e35b1;
-    border-bottom: none !important;
-    padding: 2rem 1.25rem !important;
-    flex-direction: column !important;
-    position: fixed !important;
-    left: 0;
-    top: 0;
-  }
-
-  .nav-links-wrapper {
-    flex-direction: column !important;
-    overflow-x: visible;
-    white-space: normal;
-    gap: 6px;
-  }
-
-  .main-wrapper {
-    margin-left: 426px !important;
-    /* Shift content cleanly out of fixed navbar path */
-    width: calc(100% - 426px) !important;
-    height: 100vh !important;
-    overflow-y: auto !important;
-    /* Native smooth container overflow */
-  }
-
-  .content {
-    padding: 40px 60px 180px 60px !important;
-    /* Generous desktop breathing room */
-  }
-}
-
-/* Accessibility Modes */
-.high-viz {
-  background-color: #000000 !important;
-  color: var(--high-viz-yellow) !important;
-}
-
-.high-viz h1,
-.high-viz h2,
-.high-viz h3,
-.high-viz p,
-.high-viz span,
-.high-viz a {
-  color: var(--high-viz-yellow) !important;
-}
-
-.high-viz .card,
-.high-viz .navbar {
-  background: #000000 !important;
-  border: 2px solid var(--high-viz-yellow) !important;
-  box-shadow: none !important;
-}
-
-/* Typography Utilities */
-h1,
-h2,
-h3 {
-  font-family: Arial, sans-serif;
-  font-weight: 900;
-}
-
-
-h1 {
-  font-size: clamp(2.2rem, 5vw, 4rem);
-}
-
-h2 {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(196, 181, 253, 0.12);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--lavender-mid);
-  border-radius: 999px;
-}
-
-/* Form Readability Overrides */
-/* Force all form inputs, textareas, and select menus to use a larger, relative font size */
-input,
-select,
-textarea,
-.input {
-  font-size: 1.2rem !important; /* beautifully proportional relative size */
-  font-family: inherit !important;
-}
-
-/* Force all buttons in the portal to have a highly readable text size */
-button,
-.btn-rainbow,
-.btn-outline {
-  font-size: 1.15rem !important;
-  font-family: inherit !important;
-}
-
-/* Override and boost all tiny hardcoded absolute font sizes (inline styles) in form labels, descriptions, and helper texts */
-[style*="font-size: 10px"], [style*="font-size:10px"],
-[style*="font-size: 11px"], [style*="font-size:11px"],
-[style*="font-size: 12px"], [style*="font-size:12px"],
-[style*="font-size: 13px"], [style*="font-size:13px"],
-[style*="font-size: 14px"], [style*="font-size:14px"],
-[style*="font-size: 15px"], [style*="font-size:15px"],
-[style*="font-size: 16px"], [style*="font-size:16px"] {
-  font-size: 1.1rem !important; /* boosts all 10px-16px inline pixel styles to a comfortable, scalable relative font-size */
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
 }
